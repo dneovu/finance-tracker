@@ -24,6 +24,11 @@ ERROR_RESPONSES = {
         "status": "error",
         "code": "USERNAME_SAME",
     },
+    "PASSWORD_SAME": {
+        "message": "Password cannot be the same",
+        "status": "error",
+        "code": "PASSWORD_SAME",
+    },
     "INVALID_DATA": {
         "message": "Invalid username or password",
         "status": "error",

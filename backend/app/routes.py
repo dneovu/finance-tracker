@@ -2,7 +2,13 @@ from app import app
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import request, jsonify
 from flask_login import login_user, current_user, logout_user
-from app.utils import db_connect, error_response, validate_auth_input
+from app.utils import (
+    db_connect,
+    error_response,
+    validate_auth_input,
+    validate_password_input,
+    validate_username_input,
+)
 from app.user import User
 
 
@@ -133,3 +139,94 @@ def logout():
         return error_response("USER_NOT_LOGGED_IN", 401)
     logout_user()
     return jsonify({"status": "success", "message": "User logged out"}), 200
+
+
+@app.route("/change-username", methods=["POST"])
+def update_profile():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    request_data = request.get_json()
+    username = request_data.get("username")
+
+    validation_error = validate_username_input(username)
+    if validation_error:
+        return validation_error
+
+    try:
+        con, cur = db_connect()
+        if current_user.username == username:
+            return error_response("USERNAME_SAME", 400)
+
+        res = cur.execute(
+            'UPDATE "user" SET "username" = %s WHERE "id" = %s',
+            (username, current_user.id),
+        )
+
+        # кол-во обновленных строк
+        if res.rowcount == 1:
+            con.commit()
+            logout_user()  # удаляем сессию
+            return (
+                jsonify(
+                    {
+                        "status": "success",
+                        "message": "Username updated. Please log in again.",
+                    }
+                ),
+                200,
+            )
+
+    except Exception as e:
+        if "duplicate key" in str(e).lower():
+            return error_response("USERNAME_TAKEN", 400)
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/change-password", methods=["POST"])
+def change_password():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    request_data = request.get_json()
+    current_password = request_data.get("password")
+    new_password = request_data.get("newPassword")
+
+    validation_error = validate_password_input(
+        current_password
+    ) or validate_password_input(new_password)
+    if validation_error:
+        return validation_error
+
+    if not check_password_hash(current_user.password, current_password):
+        return error_response("INVALID_PASSWORD", 400)
+
+    if current_password == new_password:
+        return error_response("PASSWORD_SAME", 400)
+
+    try:
+        con, cur = db_connect()
+        new_hash_password = generate_password_hash(new_password)
+        cur.execute(
+            'UPDATE "user" SET "password" = %s WHERE "id" = %s',
+            (new_hash_password, current_user.id),
+        )
+        con.commit()
+        logout_user()  # удаляем сессию
+
+        return jsonify({"status": "success", "message": "Password changed"}), 200
+
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
