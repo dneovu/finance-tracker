@@ -10,9 +10,12 @@ const Home = () => {
         {user ? (
           <>
             <h2>
-              Добро пожаловать,
+              Добро пожаловать,&nbsp;
               <span className="font-bold">{user.username}</span>
             </h2>
+            <NavLink className="w-fit underline" to="/profile" end>
+              Профиль
+            </NavLink>
             <button className="w-fit cursor-pointer underline" onClick={logout}>
               Выйти
             </button>

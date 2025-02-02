@@ -2,31 +2,37 @@ import useUser from '../hooks/useUser';
 import { Routes, Route, Navigate, Outlet } from 'react-router';
 import Login from '../routes/Login';
 import Register from '../routes/Register';
-import { User } from '../types';
 import Home from '../routes/Home';
+import Profile from '../routes/Profile';
 
-interface HiddenRouteProps {
-  user: User | null;
+interface RouteProps {
   redirectPath?: string;
 }
 
-const HiddenRoute = ({ user, redirectPath = '/' }: HiddenRouteProps) => {
-  if (user) {
-    return <Navigate to={redirectPath} replace />;
-  }
+const GuestRoute = ({ redirectPath = '/' }: RouteProps) => {
+  const { user, loading } = useUser();
 
-  return <Outlet />;
+  if (loading) return <div>Loading</div>;
+  return user ? <Navigate to={redirectPath} replace /> : <Outlet />;
+};
+
+const ProtectedRoute = ({ redirectPath = '/' }: RouteProps) => {
+  const { user, loading } = useUser();
+
+  if (loading) return <div>Loading</div>;
+  return user ? <Outlet /> : <Navigate to={redirectPath} replace />;
 };
 
 export const App = () => {
-  const { user } = useUser();
-
   return (
     <Routes>
       <Route index element={<Home />} />
-      <Route element={<HiddenRoute user={user} />}>
+      <Route element={<GuestRoute />}>
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
+      </Route>
+      <Route element={<ProtectedRoute />}>
+        <Route path="profile" element={<Profile />} />
       </Route>
     </Routes>
   );

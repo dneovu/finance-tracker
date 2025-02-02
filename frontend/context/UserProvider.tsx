@@ -34,7 +34,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
       }
     };
 
-    if (!user) {
+    if (user === null) {
       fetchUser();
     } else {
       setLoading(false);
@@ -69,6 +69,7 @@ const UserProvider = ({ children }: UserProviderProps) => {
         username,
         password,
       });
+      console.log(res);
       return res.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -96,8 +97,66 @@ const UserProvider = ({ children }: UserProviderProps) => {
     }
   };
 
+  const changeUsername = async (username: string) => {
+    try {
+      const res: AxiosResponse<ApiResponse> = await api.post(
+        '/change-username',
+        {
+          username,
+        }
+      );
+
+      setUser(null); // для обновления сессии
+      return res.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data);
+        return error.response?.data;
+      } else {
+        console.error(error);
+        return { status: 'error', message: 'Unknown error' };
+      }
+    }
+  };
+
+  const changePassword = async (
+    currentPassword: string,
+    newPassword: string
+  ) => {
+    try {
+      const res: AxiosResponse<ApiResponse> = await api.post(
+        '/change-password',
+        {
+          password: currentPassword,
+          newPassword,
+        }
+      );
+
+      setUser(null); // для обновления сессии
+      return res.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data);
+        return error.response?.data;
+      } else {
+        console.error(error);
+        return { status: 'error', message: 'Unknown error' };
+      }
+    }
+  };
+
   return (
-    <UserContext.Provider value={{ user, loading, login, register, logout }}>
+    <UserContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        changeUsername,
+        changePassword,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );
