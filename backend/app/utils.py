@@ -1,5 +1,7 @@
 from app import app
 import psycopg
+from flask import jsonify
+from app.errors import ERROR_RESPONSES
 
 
 def db_connect():
@@ -11,3 +13,31 @@ def db_connect():
     )
     cur = con.cursor()
     return con, cur
+
+
+def error_response(key, status_code):
+    response = ERROR_RESPONSES.get(
+        key, {"message": "Unknown error", "status": "error", "code": "UNKNOWN"}
+    )
+    return jsonify(response), status_code
+
+
+def validate_username_input(username, min_length=5, max_length=21):
+    if not username or not min_length < len(username) < max_length:
+        return error_response("INVALID_USERNAME", 400)
+    return None
+
+
+def validate_password_input(password, min_length=5, max_length=21):
+    if not password or not min_length < len(password) < max_length:
+        return error_response("INVALID_PASSWORD", 400)
+    return None
+
+
+def validate_auth_input(username, password):
+    if (validate_username_input(username) is not None) or (
+        validate_password_input(password) is not None
+    ):
+        return error_response("INVALID_DATA", 400)
+
+    return None
