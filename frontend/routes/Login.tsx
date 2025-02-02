@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import isInputValid from '../utils/isInputValid';
+import isAuthInputValid from '../utils/isAuthInputValid';
 import AuthInput from '../components/AuthInput';
 import useUser from '../hooks/useUser';
 import AuthLayout from '../components/AuthLayout';
@@ -13,7 +13,11 @@ const Login = () => {
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
 
-    await login(username, password);
+    const res = await login(username, password);
+    if (res.status === 'error') {
+      setUsername('');
+      setPassword('');
+    }
   };
 
   if (!loading)
@@ -27,7 +31,7 @@ const Login = () => {
             type="text"
             value={username}
             setValue={setUsername}
-            isValid={isInputValid}
+            isValid={isAuthInputValid}
           />
           <AuthInput
             labelName="Пароль"
@@ -35,12 +39,14 @@ const Login = () => {
             type="password"
             value={password}
             setValue={setPassword}
-            isValid={isInputValid}
+            isValid={isAuthInputValid}
           />
           <button
             className="mt-3 cursor-pointer rounded-md bg-slate-700 py-2 font-bold text-slate-50 transition-all hover:shadow-lg hover:shadow-slate-300 disabled:cursor-default disabled:bg-slate-200 disabled:hover:shadow-none"
             type="submit"
-            disabled={!isInputValid(username) || !isInputValid(password)}
+            disabled={
+              !isAuthInputValid(username) || !isAuthInputValid(password)
+            }
           >
             Войти
           </button>

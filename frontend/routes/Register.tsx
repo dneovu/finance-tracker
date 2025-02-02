@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import isInputValid from '../utils/isInputValid';
+import isAuthInputValid from '../utils/isAuthInputValid';
 import useUser from '../hooks/useUser';
 import AuthInput from '../components/AuthInput';
 import AuthLayout from '../components/AuthLayout';
@@ -14,14 +14,19 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const arePasswordsMatching = (password: string, confirmPassword: string) => {
-    return password === confirmPassword && isInputValid(confirmPassword);
+    return password === confirmPassword && isAuthInputValid(confirmPassword);
   };
 
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
 
     const res = await register(username, password);
-    if (res.status === 'success') {
+    console.log(res);
+    if (res.status === 'error') {
+      setUsername('');
+      setPassword('');
+      setConfirmPassword('');
+    } else {
       navigate('/login');
     }
   };
@@ -37,7 +42,7 @@ const Register = () => {
             type="text"
             value={username}
             setValue={setUsername}
-            isValid={isInputValid}
+            isValid={isAuthInputValid}
           />
           <AuthInput
             labelName="Пароль"
@@ -45,7 +50,7 @@ const Register = () => {
             type="password"
             value={password}
             setValue={setPassword}
-            isValid={isInputValid}
+            isValid={isAuthInputValid}
           />
           <AuthInput
             labelName="Подтвердите пароль"
@@ -59,8 +64,8 @@ const Register = () => {
             className="mt-3 cursor-pointer rounded-md bg-slate-700 py-2 font-bold text-slate-50 transition-all hover:shadow-lg hover:shadow-slate-300 disabled:cursor-default disabled:bg-slate-200 disabled:hover:shadow-none"
             type="submit"
             disabled={
-              !isInputValid(username) ||
-              !isInputValid(password) ||
+              !isAuthInputValid(username) ||
+              !isAuthInputValid(password) ||
               !arePasswordsMatching(password, confirmPassword)
             }
           >
