@@ -19,6 +19,7 @@ def after_request(response):
 
 
 app.config.from_object(Config)
+Config.init_cloudinary()
 
 login_manager = LoginManager(app)
 login_manager.init_app(app)
@@ -27,3 +28,4 @@ from app import routes
 from app import user
 from app import utils
 from app import errors
+from app import cloudinary

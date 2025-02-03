@@ -12,6 +12,7 @@ interface UserContextType {
     currentPassword: string,
     newPassword: string
   ) => Promise<ApiResponse>;
+  uploadAvatar: (file: File) => Promise<ApiResponse>;
 }
 
 const userContextReject = async () =>
@@ -25,6 +26,7 @@ const defaultUserContext: UserContextType = {
   register: userContextReject,
   changeUsername: userContextReject,
   changePassword: userContextReject,
+  uploadAvatar: userContextReject,
 };
 
 const UserContext = createContext<UserContextType>(defaultUserContext);

@@ -1,6 +1,7 @@
 import useUser from '../hooks/useUser';
 import ChangeUsernameForm from '../components/ChangeUsernameForm';
 import ChangePasswordForm from '../components/ChangePasswordForm';
+import ManageAvatar from '../components/ManageAvatar';
 
 const Profile = () => {
   const { loading } = useUser();
@@ -14,6 +15,7 @@ const Profile = () => {
         <ChangePasswordForm />
         <ChangeUsernameForm />
       </div>
+      <ManageAvatar />
     </div>
   );
 };

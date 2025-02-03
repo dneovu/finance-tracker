@@ -10,6 +10,7 @@ from app.utils import (
     validate_username_input,
 )
 from app.user import User
+from app.cloudinary import cloudinary_upload_avatar
 
 
 @app.errorhandler(400)
@@ -43,12 +44,13 @@ def register():
         return validation_error
 
     password_hash = generate_password_hash(password)
+    DEFAULT_USER_LOGO = "https://res.cloudinary.com/deuyjjozh/image/upload/v1738588834/avatars/ndlc02bbbezws3gxruzr.jpg"
 
     try:
         con, cur = db_connect()
         cur.execute(
-            'INSERT INTO "user" ("username", "password") VALUES (%s, %s)',
-            (username, password_hash),
+            'INSERT INTO "user" ("username", "password", "logo") VALUES (%s, %s, %s)',
+            (username, password_hash, DEFAULT_USER_LOGO),
         )
         con.commit()
     except Exception as e:
@@ -84,7 +86,7 @@ def login():
     try:
         con, cur = db_connect()
         res = cur.execute(
-            'SELECT "id", "username", "password" FROM "user" WHERE "username" = %s',
+            'SELECT "id", "username", "password", "logo" FROM "user" WHERE "username" = %s',
             (username,),
         ).fetchone()
 
@@ -92,7 +94,7 @@ def login():
             return error_response("INVALID_DATA", 400)
 
         # создание сессии
-        user = User(res[0], res[1], res[2])
+        user = User(res[0], res[1], res[2], res[3])
         login_user(user)
 
         return (
@@ -100,7 +102,7 @@ def login():
                 {
                     "status": "success",
                     "message": "User logged in",
-                    "user": {"username": res[1]},
+                    "user": {"username": res[1], "logo": res[3]},
                 }
             ),
             200,
@@ -124,7 +126,10 @@ def check():
                 {
                     "status": "success",
                     "message": "User is logged in",
-                    "user": {"username": current_user.username},
+                    "user": {
+                        "username": current_user.username,
+                        "logo": current_user.logo,
+                    },
                 }
             ),
             200,
@@ -230,3 +235,47 @@ def change_password():
     finally:
         if con:
             con.close()
+
+
+@app.route("/upload-avatar", methods=["POST"])
+def upload_avatar():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    file = request.files.get("file")
+    if file is None:
+        return error_response("NO_FILE_PROVIDED", 400)
+
+    ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
+
+    if not file.filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS:
+        return error_response("INVALID_IMAGE_FORMAT", 422)
+
+    try:
+        # передаем объект file напрямую в cloudinary
+        upload_result = cloudinary_upload_avatar(file)
+        secure_url = upload_result.get("secure_url")
+        if not secure_url:
+            app.logger.error("Cloudinary error: secure_url not returned")
+            return error_response("CLOUDINARY_UPLOAD_ERROR", 500)
+
+        # полученную от cloudinary ссылку на картинку сохраняем в базе
+        con, cur = db_connect()
+        cur.execute(
+            'UPDATE "user" SET "logo" = %s WHERE "id" = %s',
+            (secure_url, current_user.id),
+        )
+        con.commit()
+
+        return (
+            jsonify(
+                {"status": "success", "message": "Avatar uploaded", "url": secure_url}
+            ),
+            200,
+        )
+
+    except Exception as e:
+        app.logger.error(f"Unexpected error during avatar upload: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500

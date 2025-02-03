@@ -44,6 +44,21 @@ ERROR_RESPONSES = {
         "status": "error",
         "code": "INVALID_PASSWORD",
     },
+    "NO_FILE_PROVIDED": {
+        "message": "No file provided",
+        "status": "error",
+        "code": "NO_FILE_PROVIDED",
+    },
+    "INVALID_IMAGE_FORMAT": {
+        "message": "Invalid image format. Allowed extensions: png, jpg, jpeg",
+        "status": "error",
+        "code": "INVALID_IMAGE_FORMAT",
+    },
+    "CLOUDINARY_UPLOAD_ERROR": {
+        "message": "Cloudinary upload error",
+        "status": "error",
+        "code": "CLOUDINARY_UPLOAD_ERROR",
+    },
     "BAD_REQUEST": {
         "message": "Bad request",
         "status": "error",
