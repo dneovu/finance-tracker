@@ -1,10 +1,10 @@
 import { FormEvent, useState } from 'react';
-import useUser from '../hooks/useUser';
+import useProfile from '../hooks/useProfile';
 import AuthInput from './AuthInput';
 import isAuthInputValid from '../utils/isAuthInputValid';
 
 const ChangeUsernameForm = () => {
-  const { user, changeUsername } = useUser();
+  const { changeUsername } = useProfile();
   const [newUsername, setNewUsername] = useState('');
 
   const handleUpdateUsername = async (e: FormEvent) => {
@@ -20,27 +20,20 @@ const ChangeUsernameForm = () => {
   };
 
   return (
-    <>
-      {user && (
-        <form
-          className="flex w-fit flex-col gap-3"
-          onSubmit={handleUpdateUsername}
-        >
-          <h2>Изменение логина</h2>
-          <AuthInput
-            labelName="Новый логин"
-            id="newUsername"
-            type="text"
-            value={newUsername}
-            setValue={setNewUsername}
-            isValid={isAuthInputValid}
-          />
-          <button type="submit" className="w-fit cursor-pointer text-red-600">
-            Изменить логин
-          </button>
-        </form>
-      )}
-    </>
+    <form className="flex w-fit flex-col gap-3" onSubmit={handleUpdateUsername}>
+      <h2>Изменение логина</h2>
+      <AuthInput
+        labelName="Новый логин"
+        id="newUsername"
+        type="text"
+        value={newUsername}
+        setValue={setNewUsername}
+        isValid={isAuthInputValid}
+      />
+      <button type="submit" className="w-fit cursor-pointer text-red-600">
+        Изменить логин
+      </button>
+    </form>
   );
 };
 

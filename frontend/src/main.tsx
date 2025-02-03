@@ -1,12 +1,15 @@
 import { createRoot } from 'react-dom/client';
 import { App } from './App.jsx';
-import UserProvider from '../context/UserProvider.js';
+import AuthProvider from '../context/AuthProvider.js';
+import ProfileProvider from '../context/ProfileProvider.js';
 import { BrowserRouter } from 'react-router';
 
 createRoot(document.getElementById('root') as HTMLElement).render(
-  <UserProvider>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </UserProvider>
+  <AuthProvider>
+    <ProfileProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ProfileProvider>
+  </AuthProvider>
 );

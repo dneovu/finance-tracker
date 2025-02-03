@@ -1,8 +1,8 @@
 import { NavLink } from 'react-router';
-import useUser from '../hooks/useUser';
+import useAuth from '../hooks/useAuth';
 
 const Home = () => {
-  const { user, loading, logout } = useUser();
+  const { user, loading, logout } = useAuth();
 
   if (!loading)
     return (

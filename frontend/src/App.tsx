@@ -1,4 +1,4 @@
-import useUser from '../hooks/useUser';
+import useAuth from '../hooks/useAuth';
 import { Routes, Route, Navigate, Outlet } from 'react-router';
 import Login from '../routes/Login';
 import Register from '../routes/Register';
@@ -10,14 +10,14 @@ interface RouteProps {
 }
 
 const GuestRoute = ({ redirectPath = '/' }: RouteProps) => {
-  const { user, loading } = useUser();
+  const { user, loading } = useAuth();
 
   if (loading) return <div>Loading</div>;
   return user ? <Navigate to={redirectPath} replace /> : <Outlet />;
 };
 
 const ProtectedRoute = ({ redirectPath = '/' }: RouteProps) => {
-  const { user, loading } = useUser();
+  const { user, loading } = useAuth();
 
   if (loading) return <div>Loading</div>;
   return user ? <Outlet /> : <Navigate to={redirectPath} replace />;
