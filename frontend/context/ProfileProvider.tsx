@@ -1,14 +1,10 @@
 import api from '../utils/api';
 import ProfileContext from './ProfileContext';
-import { ApiAvatarResponse, ApiResponse } from '../types';
+import { ApiAvatarResponse, ApiResponse, ProviderProps } from '../types';
 import axios, { AxiosResponse } from 'axios';
 import useAuth from '../hooks/useAuth';
 
-interface ProfileProviderProps {
-  children?: React.ReactNode;
-}
-
-const ProfileProvider = ({ children }: ProfileProviderProps) => {
+const ProfileProvider = ({ children }: ProviderProps) => {
   const { user, updateUser } = useAuth();
 
   const changeUsername = async (username: string) => {
@@ -74,7 +70,7 @@ const ProfileProvider = ({ children }: ProfileProviderProps) => {
         }
       );
       // обновление аватара в user state
-      if (user) {
+      if (user && res.data.url) {
         updateUser({ ...user, logo: res.data.url });
       }
 

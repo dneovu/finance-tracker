@@ -10,16 +10,16 @@ interface RouteProps {
 }
 
 const GuestRoute = ({ redirectPath = '/' }: RouteProps) => {
-  const { user, loading } = useAuth();
+  const { user, isUserLoading } = useAuth();
 
-  if (loading) return <div>Loading</div>;
+  if (isUserLoading) return <div>Загрузка...</div>;
   return user ? <Navigate to={redirectPath} replace /> : <Outlet />;
 };
 
 const ProtectedRoute = ({ redirectPath = '/' }: RouteProps) => {
-  const { user, loading } = useAuth();
+  const { user, isUserLoading } = useAuth();
 
-  if (loading) return <div>Loading</div>;
+  if (isUserLoading) return <div>Загрузка..</div>;
   return user ? <Outlet /> : <Navigate to={redirectPath} replace />;
 };
 

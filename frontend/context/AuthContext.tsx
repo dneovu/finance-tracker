@@ -3,8 +3,9 @@ import { ApiResponse, User } from '../types';
 
 interface AuthContextType {
   user: User | null;
+  isUserAuthenticated: boolean;
   updateUser: (newUser: User | null) => void;
-  loading: boolean;
+  isUserLoading: boolean;
   login: (username: string, password: string) => Promise<ApiResponse>;
   logout: () => Promise<ApiResponse>;
   register: (username: string, password: string) => Promise<ApiResponse>;
@@ -15,8 +16,9 @@ const authContextReject = async () =>
 
 const defaultAuthContext: AuthContextType = {
   user: null,
+  isUserAuthenticated: false,
   updateUser: () => {},
-  loading: false,
+  isUserLoading: false,
   login: authContextReject,
   logout: authContextReject,
   register: authContextReject,

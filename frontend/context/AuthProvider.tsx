@@ -1,28 +1,26 @@
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
 import AuthContext from './AuthContext';
-import { ApiResponse, User } from '../types';
+import { ApiResponse, ProviderProps, User } from '../types';
 import axios, { AxiosResponse } from 'axios';
-
-interface AuthProviderProps {
-  children?: React.ReactNode;
-}
 
 interface AuthResponse extends ApiResponse {
   user?: User;
 }
 
-const AuthProvider = ({ children }: AuthProviderProps) => {
+const AuthProvider = ({ children }: ProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
+  const [isUserLoading, setIsUserLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
-      setLoading(true);
+      setIsUserLoading(true);
       try {
         const res: AxiosResponse<AuthResponse> = await api.get('/check');
         if (res.data.user) {
           setUser(res.data.user);
+          console.log(res.data);
         }
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -31,16 +29,16 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
           console.error(error);
         }
       } finally {
-        setLoading(false);
+        setIsUserLoading(false);
       }
     };
 
     if (user === null) {
       fetchUser();
     } else {
-      setLoading(false);
+      setIsUserLoading(false);
+      setIsUserAuthenticated(true);
     }
-    console.log(user);
   }, [user]);
 
   const login = async (username: string, password: string) => {
@@ -88,6 +86,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const res = await api.post('logout');
       setUser(null);
+      setIsUserAuthenticated(false);
       return res.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -107,8 +106,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     <AuthContext.Provider
       value={{
         user,
+        isUserAuthenticated,
         updateUser,
-        loading,
+        isUserLoading,
         login,
         register,
         logout,

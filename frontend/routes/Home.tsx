@@ -2,9 +2,9 @@ import { NavLink } from 'react-router';
 import useAuth from '../hooks/useAuth';
 
 const Home = () => {
-  const { user, loading, logout } = useAuth();
+  const { user, isUserLoading, logout } = useAuth();
 
-  if (!loading)
+  if (!isUserLoading)
     return (
       <div className="flex flex-col gap-3">
         {user ? (

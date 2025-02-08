@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { ApiResponse } from '../types';
+import { ApiAvatarResponse, ApiResponse } from '../types';
 
 interface ProfileContextType {
   changeUsername: (username: string) => Promise<ApiResponse>;
@@ -7,7 +7,7 @@ interface ProfileContextType {
     currentPassword: string,
     newPassword: string
   ) => Promise<ApiResponse>;
-  uploadAvatar: (file: File) => Promise<ApiResponse>;
+  uploadAvatar: (file: File) => Promise<ApiAvatarResponse>;
 }
 
 const profileContextReject = async () =>
