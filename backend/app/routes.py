@@ -8,6 +8,8 @@ from app.utils import (
     validate_auth_input,
     validate_password_input,
     validate_username_input,
+    format_categories,
+    format_category,
 )
 from app.user import User
 from app.cloudinary import cloudinary_upload_avatar
@@ -48,9 +50,22 @@ def register():
 
     try:
         con, cur = db_connect()
+        # создаем пользователя
         cur.execute(
-            'INSERT INTO "user" ("username", "password", "logo") VALUES (%s, %s, %s)',
+            'INSERT INTO "user" ("username", "password", "logo") VALUES (%s, %s, %s) RETURNING "id"',
             (username, password_hash, DEFAULT_USER_LOGO),
+        )
+        user_id = cur.fetchone()[0]
+        con.commit()
+        # добавляем дефолтные категории
+        categories = [
+            ("Рестораны", user_id, False),
+            ("Одежда", user_id, False),
+            ("Магазин", user_id, False),
+        ]
+        cur.executemany(
+            'INSERT INTO "category" ("name", "user_id", "type") VALUES (%s, %s, %s)',
+            categories,
         )
         con.commit()
     except Exception as e:
@@ -279,3 +294,117 @@ def upload_avatar():
     except Exception as e:
         app.logger.error(f"Unexpected error during avatar upload: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+# для получения текущих категорий пользователя
+@app.route("/categories", methods=["GET"])
+def get_categories():
+    if request.method != "GET":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    try:
+        con, cur = db_connect()
+        res = cur.execute(
+            'SELECT * FROM "category" WHERE "user_id" = %s', (current_user.id,)
+        ).fetchall()
+
+        if not res:
+            return (
+                jsonify(
+                    {
+                        "status": "success",
+                        "message": "No categories",
+                        "categories": {},
+                    }
+                ),
+                200,
+            )
+
+        categories = format_categories(res)
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "User has categories",
+                    "categories": categories,
+                }
+            ),
+            200,
+        )
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/add-category", methods=["POST"])
+def add_category():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    request_data = request.get_json()
+    name = request_data.get("name")
+    type = request_data.get("type")
+
+    try:
+        con, cur = db_connect()
+        res = cur.execute(
+            'INSERT INTO category ("name", "user_id", "type") VALUES (%s, %s, %s) RETURNING "id", "name", "user_id", "type"',
+            (name, current_user.id, type),
+        ).fetchone()
+
+        # приводим добавленную категорию к нужному формату для отправки на фронтенд
+        category = format_category(res)
+        print(category)
+        con.commit()
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "Category added",
+                    "category": category,
+                }
+            ),
+            200,
+        )
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/delete-category", methods=["POST"])
+def delete_category():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    request_data = request.get_json()
+    category_id = request_data.get("id")
+
+    try:
+        con, cur = db_connect()
+        cur.execute(
+            'DELETE FROM "category" WHERE "id" = %s AND "user_id" = %s',
+            (category_id, current_user.id),
+        )
+        con.commit()
+        return jsonify({"status": "success", "message": "Category deleted"}), 200
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()

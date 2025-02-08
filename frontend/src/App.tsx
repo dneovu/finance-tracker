@@ -4,6 +4,7 @@ import Login from '../routes/Login';
 import Register from '../routes/Register';
 import Home from '../routes/Home';
 import Profile from '../routes/Profile';
+import Categories from '../routes/Categories';
 
 interface RouteProps {
   redirectPath?: string;
@@ -33,6 +34,7 @@ export const App = () => {
       </Route>
       <Route element={<ProtectedRoute />}>
         <Route path="profile" element={<Profile />} />
+        <Route path="categories" element={<Categories />} />
       </Route>
     </Routes>
   );

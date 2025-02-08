@@ -16,6 +16,9 @@ const Home = () => {
             <NavLink className="w-fit underline" to="/profile" end>
               Профиль
             </NavLink>
+            <NavLink className="w-fit underline" to="/categories" end>
+              Категории
+            </NavLink>
             <button className="w-fit cursor-pointer underline" onClick={logout}>
               Выйти
             </button>

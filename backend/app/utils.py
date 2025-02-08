@@ -41,3 +41,21 @@ def validate_auth_input(username, password):
         return error_response("INVALID_DATA", 400)
 
     return None
+
+# форматирует категории, полученные из бд, для отправки через json
+def format_categories(categories):
+    return {
+        category[0]: {  # category[0] — id
+            "id": category[0],
+            "name": category[1],  # category[1] — name
+            "type": category[3],  # category[3] — type
+        }
+        for category in categories
+    }
+
+def format_category(category):
+    return {
+        "id": category[0],
+        "name": category[1],
+        "type": category[3],
+    }
