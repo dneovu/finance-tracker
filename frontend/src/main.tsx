@@ -4,14 +4,17 @@ import AuthProvider from '../context/AuthProvider.js';
 import ProfileProvider from '../context/ProfileProvider.js';
 import { BrowserRouter } from 'react-router';
 import CateroryProvider from '../context/CategoryProvider.js';
+import TransactionProvider from '../context/TransactionProvider.js';
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <AuthProvider>
     <ProfileProvider>
       <CateroryProvider>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
+        <TransactionProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </TransactionProvider>
       </CateroryProvider>
     </ProfileProvider>
   </AuthProvider>

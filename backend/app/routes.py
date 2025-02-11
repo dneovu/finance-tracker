@@ -9,10 +9,11 @@ from app.utils import (
     validate_password_input,
     validate_username_input,
     format_categories,
-    format_category,
+    format_transactions,
 )
 from app.user import User
 from app.cloudinary import cloudinary_upload_avatar
+from datetime import datetime
 
 
 @app.errorhandler(400)
@@ -362,16 +363,16 @@ def add_category():
             (name, current_user.id, type),
         ).fetchone()
 
-        # приводим добавленную категорию к нужному формату для отправки на фронтенд
-        category = format_category(res)
-        print(category)
+        # приводим добавленную категорию к нужному формату для отправки
+        category = format_categories([res])
+
         con.commit()
         return (
             jsonify(
                 {
                     "status": "success",
                     "message": "Category added",
-                    "category": category,
+                    "categories": category,
                 }
             ),
             200,
@@ -402,6 +403,191 @@ def delete_category():
         )
         con.commit()
         return jsonify({"status": "success", "message": "Category deleted"}), 200
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/transactions", methods=["GET"])
+def get_transactions():
+    if request.method != "GET":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    try:
+        con, cur = db_connect()
+
+        res = cur.execute(
+            """
+            SELECT 
+                t.id, 
+                t.amount, 
+                t.date, 
+                c.id AS category_id, 
+                c.name AS category_name, 
+                c.type AS category_type
+            FROM "transaction" t
+            JOIN "category" c ON t."category_id" = c."id"
+            WHERE c."user_id" = %s
+            """,
+            (current_user.id,),
+        ).fetchall()
+        transactions = format_transactions(res)
+
+        if not res:
+            return (
+                jsonify(
+                    {
+                        "status": "success",
+                        "message": "No transactions",
+                        "transactions": {},
+                    }
+                ),
+                200,
+            )
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "User has transactions",
+                    "transactions": transactions,
+                }
+            ),
+            200,
+        )
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/add-transaction", methods=["POST"])
+def add_transaction():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    request_data = request.get_json()
+    amount = int(request_data.get("amount"))
+    date = request_data.get("date")
+    category_id = request_data.get("category_id")
+
+    if not amount or amount > 1000000 or not date or not category_id:
+        return (
+            jsonify({"status": "error", "message": "Missing required fields"}),
+            400,
+        )
+
+    if amount < 0:
+        amount *= -1
+
+    try:
+        con, cur = db_connect()
+        # проверяем, принадлежит ли категория пользователю
+        category_res = cur.execute(
+            """
+            SELECT name, type FROM "category"
+            WHERE id = %s AND user_id = %s;
+            """,
+            (category_id, current_user.id),
+        ).fetchone()
+
+        if not category_res:
+            return (
+                jsonify(
+                    {"status": "Error", "message": "Error while adding transaction"}
+                ),
+                400,
+            )
+        category_name, category_type = category_res
+
+        res = cur.execute(
+            """
+            INSERT INTO "transaction" ("amount", "date", "category_id") 
+            VALUES (%s, %s, %s) 
+            RETURNING id, amount, date, category_id;
+            """,
+            (amount, date, category_id),
+        ).fetchone()
+        con.commit()
+
+        if not res:
+            return (
+                jsonify(
+                    {"status": "Error", "message": "Error while adding transaction"}
+                ),
+                400,
+            )
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "Transaction added",
+                    "transactions": {
+                        res[0]: {
+                            "id": res[0],
+                            "amount": float(res[1]),
+                            "date": res[2].isoformat(),
+                            "category": {
+                                "id": res[3],
+                                "name": category_name,
+                                "type": category_type,
+                            },
+                        }
+                    },
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/delete-transaction", methods=["POST"])
+def delete_transaction():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    request_data = request.get_json()
+    transaction_id = request_data.get("id")
+
+    try:
+        con, cur = db_connect()
+        # проверка, что транзакция принадлежит пользователю
+        transaction_category_id = cur.execute(
+            'SELECT "category_id" FROM "transaction" WHERE "id" = %s',
+            (transaction_id,),
+        ).fetchone()[0]
+
+        category_user_id = cur.execute(
+            'SELECT "user_id" FROM "category" WHERE "id" = %s',
+            (transaction_category_id,),
+        ).fetchone()[0]
+
+        if int(category_user_id) != int(current_user.id):
+            return jsonify({"status": "error", "message": "Unauthorized"}), 401
+
+        cur.execute(
+            'DELETE FROM "transaction" WHERE "id" = %s',
+            (transaction_id,),
+        )
+        con.commit()
+        return jsonify({"status": "success", "message": "Transaction deleted"}), 200
     except Exception as e:
         app.logger.error(f"Error: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500

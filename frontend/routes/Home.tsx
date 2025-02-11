@@ -19,6 +19,9 @@ const Home = () => {
             <NavLink className="w-fit underline" to="/categories" end>
               Категории
             </NavLink>
+            <NavLink className="w-fit underline" to="/transactions" end>
+              Транзакции
+            </NavLink>
             <button className="w-fit cursor-pointer underline" onClick={logout}>
               Выйти
             </button>

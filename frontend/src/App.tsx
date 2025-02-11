@@ -5,6 +5,7 @@ import Register from '../routes/Register';
 import Home from '../routes/Home';
 import Profile from '../routes/Profile';
 import Categories from '../routes/Categories';
+import Transactions from '../routes/Transactions';
 
 interface RouteProps {
   redirectPath?: string;
@@ -35,6 +36,7 @@ export const App = () => {
       <Route element={<ProtectedRoute />}>
         <Route path="profile" element={<Profile />} />
         <Route path="categories" element={<Categories />} />
+        <Route path="transactions" element={<Transactions />} />
       </Route>
     </Routes>
   );

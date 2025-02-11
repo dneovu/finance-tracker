@@ -42,6 +42,7 @@ def validate_auth_input(username, password):
 
     return None
 
+
 # форматирует категории, полученные из бд, для отправки через json
 def format_categories(categories):
     return {
@@ -53,9 +54,18 @@ def format_categories(categories):
         for category in categories
     }
 
-def format_category(category):
+
+def format_transactions(transactions):
     return {
-        "id": category[0],
-        "name": category[1],
-        "type": category[3],
+        transaction[0]: {
+            "id": transaction[0],
+            "amount": float(transaction[1]),
+            "date": transaction[2].isoformat(),
+            "category": {
+                "id": transaction[3],
+                "name": transaction[4],
+                "type": transaction[5],
+            },
+        }
+        for transaction in transactions
     }
