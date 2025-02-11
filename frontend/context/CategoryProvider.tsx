@@ -1,30 +1,23 @@
 import { useEffect, useState } from 'react';
-import { ApiResponse, Categories, Category, ProviderProps } from '../types';
+import {
+  ApiResponse,
+  Categories,
+  CategoriesResponse,
+  ProviderProps,
+} from '../types';
 import CategoryContext from './CategoryContext';
 import api from '../utils/api';
 import axios, { AxiosResponse } from 'axios';
 import useAuth from '../hooks/useAuth';
 
-interface CategoriesResponse extends ApiResponse {
-  categories?: Categories;
-}
-
-interface AddCategoryResponse extends ApiResponse {
-  category?: Category;
-}
-
 const CateroryProvider = ({ children }: ProviderProps) => {
   const { isUserAuthenticated } = useAuth();
   const [categories, setCategories] = useState<Categories>({});
-  const [isCategoriesLoading, setIsCategoriesLoading] = useState(true);
-
-  useEffect(() => {
-    console.log('Текущие категории', categories);
-  }, [categories]);
+  const [areCategoriesLoading, setAreCategoriesLoading] = useState(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
-      setIsCategoriesLoading(true);
+      setAreCategoriesLoading(true);
       try {
         const res: AxiosResponse<CategoriesResponse> =
           await api.get('/categories');
@@ -39,7 +32,7 @@ const CateroryProvider = ({ children }: ProviderProps) => {
           console.error(error);
         }
       } finally {
-        setIsCategoriesLoading(false);
+        setAreCategoriesLoading(false);
       }
     };
 
@@ -48,19 +41,19 @@ const CateroryProvider = ({ children }: ProviderProps) => {
 
   const addCategory = async (name: string, type: boolean) => {
     try {
-      const res: AxiosResponse<AddCategoryResponse> = await api.post(
+      const res: AxiosResponse<CategoriesResponse> = await api.post(
         '/add-category',
         {
           name,
           type,
         }
       );
-      const newCategory = res.data.category;
+      const newCategory = res.data.categories;
       if (newCategory) {
         // обновление категории в стейте
         setCategories((prevCategories) => ({
           ...prevCategories,
-          [newCategory.id]: newCategory,
+          ...newCategory,
         }));
       }
       return res.data;
@@ -104,7 +97,7 @@ const CateroryProvider = ({ children }: ProviderProps) => {
 
   return (
     <CategoryContext.Provider
-      value={{ categories, isCategoriesLoading, addCategory, deleteCategory }}
+      value={{ categories, areCategoriesLoading, addCategory, deleteCategory }}
     >
       {children}
     </CategoryContext.Provider>

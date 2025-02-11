@@ -1,12 +1,12 @@
 import { createContext } from 'react';
-import { ApiResponse, User } from '../types';
+import { ApiResponse, AuthResponse, User } from '../types';
 
 interface AuthContextType {
   user: User | null;
   isUserAuthenticated: boolean;
   updateUser: (newUser: User | null) => void;
   isUserLoading: boolean;
-  login: (username: string, password: string) => Promise<ApiResponse>;
+  login: (username: string, password: string) => Promise<AuthResponse>;
   logout: () => Promise<ApiResponse>;
   register: (username: string, password: string) => Promise<ApiResponse>;
 }

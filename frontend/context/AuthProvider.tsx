@@ -1,12 +1,8 @@
 import { useEffect, useState } from 'react';
 import api from '../utils/api';
 import AuthContext from './AuthContext';
-import { ApiResponse, ProviderProps, User } from '../types';
+import { ApiResponse, AuthResponse, ProviderProps, User } from '../types';
 import axios, { AxiosResponse } from 'axios';
-
-interface AuthResponse extends ApiResponse {
-  user?: User;
-}
 
 const AuthProvider = ({ children }: ProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
@@ -94,6 +90,7 @@ const AuthProvider = ({ children }: ProviderProps) => {
         return error.response?.data;
       } else {
         console.error(error);
+        return { status: 'error', message: 'Unknown error' };
       }
     }
   };

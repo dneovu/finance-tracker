@@ -1,10 +1,10 @@
 import { createContext } from 'react';
-import { ApiResponse, Categories } from '../types';
+import { AddCategoryResponse, ApiResponse, Categories } from '../types';
 
 interface CategoryContextType {
   categories: Categories;
-  isCategoriesLoading: boolean;
-  addCategory: (name: string, type: boolean) => Promise<ApiResponse>;
+  areCategoriesLoading: boolean;
+  addCategory: (name: string, type: boolean) => Promise<AddCategoryResponse>;
   deleteCategory: (id: number) => Promise<ApiResponse>;
 }
 
@@ -13,7 +13,7 @@ const categoryContextReject = async () =>
 
 const defaultCategoryContext: CategoryContextType = {
   categories: [],
-  isCategoriesLoading: false,
+  areCategoriesLoading: false,
   addCategory: categoryContextReject,
   deleteCategory: categoryContextReject,
 };
