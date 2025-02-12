@@ -1,5 +1,6 @@
 import { Categories, Category } from './category';
 import { Friend, Friends } from './friend';
+import { Reminder, Reminders } from './reminder';
 import { Transactions } from './transaction';
 import { User } from './user';
 
@@ -37,4 +38,13 @@ export interface FriendsResponse extends ApiResponse {
 
 export interface FriendRequestResponse extends ApiResponse {
   friend?: Friend;
+}
+
+export interface RemindersResponse extends ApiResponse {
+  reminders?: Reminders;
+  shared_reminders?: Reminders;
+}
+
+export interface AddReminderResponse extends ApiResponse {
+  reminder?: Reminder;
 }

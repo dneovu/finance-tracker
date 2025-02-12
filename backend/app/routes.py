@@ -817,6 +817,7 @@ def delete_friend():
         if con:
             con.close()
 
+
 @app.route("/friends/cancel-request", methods=["POST"])
 def cancel_friend_request():
     if request.method != "POST":
@@ -840,8 +841,9 @@ def cancel_friend_request():
         return jsonify({"status": "error", "message": str(e)}), 500
     finally:
         if con:
-            con.close() 
-            
+            con.close()
+
+
 @app.route("/friends/decline-request", methods=["POST"])
 def decline_friend_request():
     if request.method != "POST":
@@ -862,6 +864,241 @@ def decline_friend_request():
         return jsonify({"status": "success", "message": "Friend request declined"}), 200
     except Exception as e:
         app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/reminders", methods=["GET"])
+def get_reminders():
+    if request.method != "GET":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    try:
+        con, cur = db_connect()
+
+        # получаем личные и общие напоминания
+        reminders = cur.execute(
+            """
+            SELECT "id", "amount", "name", "due_date", "is_active", 
+                CASE WHEN "is_shared" THEN 'shared' ELSE 'personal' END AS type
+            FROM "reminder"
+            WHERE "user_id" = %s;
+            """,
+            (current_user.id,),
+        ).fetchall()
+
+        # разделяем напоминания по категориям
+        personal_reminders = []
+        shared_reminders = []
+
+        for row in reminders:
+            reminder = {
+                "id": row[0],
+                "amount": float(row[1]),
+                "name": row[2],
+                "dueDate": row[3].isoformat(),
+                "isActive": row[4],
+            }
+            if row[5] == "personal":
+                personal_reminders.append(reminder)
+            else:
+                shared_reminders.append(reminder)
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "User reminders retrieved successfully",
+                    "reminders": personal_reminders,
+                    "shared_reminders": shared_reminders,
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/reminders/add-reminder", methods=["POST"])
+def add_reminder():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    try:
+        data = request.get_json()
+
+        amount = data.get("amount")
+        name = data.get("name")
+        due_date_str = data.get("dueDate")
+
+        if not all([amount, name, due_date_str]):
+            return jsonify({"status": "error", "message": "Invalid data"}), 500
+
+        # преобразуем строку в datetime (без учета часового пояса)
+        due_date = datetime.strptime(due_date_str, "%Y-%m-%dT%H:%M:%S")
+
+        con, cur = db_connect()
+
+        # вставляем новую запись
+        cur.execute(
+            """
+            INSERT INTO "reminder" ("user_id", "amount", "name", "due_date", "is_active", "is_shared")
+            VALUES (%s, %s, %s, %s, TRUE, FALSE)
+            RETURNING "id", "amount", "name", "due_date", "is_active";
+            """,
+            (current_user.id, amount, name, due_date),
+        )
+        new_reminder = cur.fetchone()
+        con.commit()
+
+        # формируем ответ
+        reminder_response = {
+            "id": new_reminder[0],
+            "amount": float(new_reminder[1]),
+            "name": new_reminder[2],
+            "dueDate": new_reminder[3].isoformat(),
+            "isActive": new_reminder[4],
+        }
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "Reminder added",
+                    "reminder": reminder_response,
+                }
+            ),
+            201,
+        )
+
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/reminders/add-shared-reminder", methods=["POST"])
+def add_shared_reminder():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    data = request.get_json()
+    name = data.get("name")
+    due_date = data.get("dueDate")
+    shared_reminders = data.get("sharedReminders")
+
+    if not name or not due_date or not shared_reminders:
+        return jsonify({"status": "error", "message": "Invalid data"}), 400
+
+    try:
+        con, cur = db_connect()
+
+        # Получаем список друзей текущего пользователя (status = 1)
+        cur.execute(
+            """
+            SELECT friend_id FROM friends WHERE user_id = %s AND status = 1
+            UNION
+            SELECT user_id FROM friends WHERE friend_id = %s AND status = 1;
+            """,
+            (current_user.id, current_user.id),
+        )
+
+        friends = {row[0] for row in cur.fetchall()}  # множество id друзей
+        print(f"friends: {friends}")
+        print(f"shared_reminders: {shared_reminders}")
+
+        created_reminders = []
+
+        for user_id, amount in shared_reminders.items():
+            if int(user_id) not in friends:
+                app.logger.warning(f"User {user_id} is not a friend, skipping")
+                continue  # Пропускаем, если не друг
+
+            formatted_name = f"{name} от {current_user.username}"
+
+            cur.execute(
+                """
+                INSERT INTO "reminder" ("amount", "name", "due_date", "is_active", "is_shared", "user_id")
+                VALUES (%s, %s, %s, TRUE, TRUE, %s)
+                RETURNING "id", "amount", "name", "due_date", "is_active";
+                """,
+                (amount, formatted_name, due_date, user_id),
+            )
+
+            new_reminder = cur.fetchone()
+            if new_reminder:
+                created_reminders.append(
+                    {
+                        "id": new_reminder[0],
+                        "amount": new_reminder[1],
+                        "name": new_reminder[2],
+                        "dueDate": new_reminder[3].isoformat(),
+                        "isActive": new_reminder[4],
+                    }
+                )
+
+        con.commit()
+
+        if not created_reminders:
+            return (
+                jsonify({"status": "success", "message": "No reminders were added"}),
+                200,
+            )
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "Shared reminders created",
+                    "reminders": created_reminders,
+                }
+            ),
+            201,
+        )
+
+    except Exception as e:
+        app.logger.error(f"Error in add_shared_reminder: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/reminders/deactivate-reminder", methods=["POST"])
+def deactivate_reminder():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    data = request.get_json()
+    reminder_id = data.get("id")
+
+    try:
+        con, cur = db_connect()
+        cur.execute(
+            'DELETE FROM "reminder" WHERE "id" = %s AND "user_id" = %s',
+            (reminder_id, current_user.id),
+        )
+        con.commit()
+        return jsonify({"status": "success", "message": "Reminder deactivated"}), 200
+    except Exception as e:
+        app.logger.error(f"Error in deactivate_reminder: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
     finally:
         if con:

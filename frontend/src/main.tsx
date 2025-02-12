@@ -6,18 +6,21 @@ import { BrowserRouter } from 'react-router';
 import CateroryProvider from '../context/CategoryProvider.js';
 import TransactionProvider from '../context/TransactionProvider.js';
 import FriendProvider from '../context/FriendProvider.js';
+import ReminderProvider from '../context/ReminderProvider.js';
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <AuthProvider>
     <ProfileProvider>
       <FriendProvider>
-        <CateroryProvider>
-          <TransactionProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
-          </TransactionProvider>
-        </CateroryProvider>
+        <ReminderProvider>
+          <CateroryProvider>
+            <TransactionProvider>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </TransactionProvider>
+          </CateroryProvider>
+        </ReminderProvider>
       </FriendProvider>
     </ProfileProvider>
   </AuthProvider>

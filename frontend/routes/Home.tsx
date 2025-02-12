@@ -22,6 +22,9 @@ const Home = () => {
             <NavLink className="w-fit underline" to="/transactions" end>
               Транзакции
             </NavLink>
+            <NavLink className="w-fit underline" to="/reminders" end>
+              Напоминания
+            </NavLink>
             <NavLink className="w-fit underline" to="/friends" end>
               Друзья
             </NavLink>

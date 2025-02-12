@@ -7,6 +7,7 @@ import Profile from '../routes/Profile';
 import Categories from '../routes/Categories';
 import Transactions from '../routes/Transactions';
 import Friends from '../routes/Friends';
+import Reminders from '../routes/Reminders';
 
 interface RouteProps {
   redirectPath?: string;
@@ -39,6 +40,7 @@ export const App = () => {
         <Route path="categories" element={<Categories />} />
         <Route path="transactions" element={<Transactions />} />
         <Route path="friends" element={<Friends />} />
+        <Route path='reminders' element={<Reminders />} />
       </Route>
     </Routes>
   );
