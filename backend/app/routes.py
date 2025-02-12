@@ -10,6 +10,8 @@ from app.utils import (
     validate_username_input,
     format_categories,
     format_transactions,
+    format_friends_and_requests,
+    format_incoming_requests,
 )
 from app.user import User
 from app.cloudinary import cloudinary_upload_avatar
@@ -588,6 +590,276 @@ def delete_transaction():
         )
         con.commit()
         return jsonify({"status": "success", "message": "Transaction deleted"}), 200
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/friends", methods=["GET"])
+def get_friends():
+    if request.method != "GET":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    try:
+        con, cur = db_connect()
+
+        con, cur = db_connect()
+
+        # получаем друзей и исходящие заявки
+        friends_and_outgoing_requests = cur.execute(
+            """
+            SELECT f.friend_id, f.status, u.username, u.logo,
+                CASE WHEN f.status = 1 THEN 'friend' ELSE 'outgoing_request' END AS type
+            FROM friends f
+            JOIN "user" u ON f.friend_id = u.id
+            WHERE f.user_id = %s;
+            """,
+            (current_user.id,),
+        ).fetchall()
+
+        # получаем входящие заявки
+        incoming_requests = cur.execute(
+            """
+            SELECT f.user_id, f.status, u.username, u.logo
+            FROM friends f
+            JOIN "user" u ON f.user_id = u.id
+            WHERE f.friend_id = %s AND f.status = 0;
+            """,
+            (current_user.id,),
+        ).fetchall()
+
+        # форматируем результат
+        formatted_friends, formatted_outgoing_requests = format_friends_and_requests(
+            friends_and_outgoing_requests
+        )
+        formatted_incoming_requests = format_incoming_requests(incoming_requests)
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "User has friends",
+                    "friends": formatted_friends,
+                    "outgoing_requests": formatted_outgoing_requests,
+                    "incoming_requests": formatted_incoming_requests,
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/friends/send-request", methods=["POST"])
+def add_friend():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    request_data = request.get_json()
+    friend_name = request_data.get("username")
+
+    try:
+        con, cur = db_connect()
+
+        friend_data = cur.execute(
+            'SELECT "id", "username", "logo" FROM "user" WHERE "username" = %s',
+            (friend_name,),
+        ).fetchone()
+        # если пользователя не существует
+        if not friend_data:
+            return error_response("INVALID_USERNAME", 404)
+
+        friend_id, friend_username, friend_logo = friend_data  # Распаковываем данные
+        # проверка на уже добавленного друга
+        res = cur.execute(
+            'SELECT "status" FROM "friends" WHERE "user_id" = %s AND "friend_id" = %s',
+            (current_user.id, friend_id),
+        ).fetchone()
+        if res:
+            if res[0] == 1:
+                return (
+                    jsonify({"status": "error", "message": "Friend already added"}),
+                    400,
+                )
+            if res[0] == 0:
+                return (
+                    jsonify({"status": "error", "message": "Request already sent"}),
+                    400,
+                )
+        # отпрвка заявки (статус 0)
+        cur.execute(
+            'INSERT INTO "friends" ("user_id", "friend_id", "status") VALUES (%s, %s, %s)',
+            (current_user.id, friend_id, 0),
+        )
+
+        con.commit()
+        # формируем json
+        friend = {
+            "id": friend_id,
+            "username": friend_username,
+            "logo": friend_logo,
+            "status": 0,
+        }
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "Friend request sent",
+                    "friend": friend,
+                }
+            ),
+            200,
+        )
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/friends/accept-request", methods=["POST"])
+def accept_friend_request():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    request_data = request.get_json()
+    friend_id = request_data.get("id")
+
+    try:
+        con, cur = db_connect()
+        # обновляем статус заявки у друга
+        cur.execute(
+            'UPDATE "friends" SET "status" = 1 WHERE "user_id" = %s AND "friend_id" = %s',
+            (friend_id, current_user.id),
+        )
+        # создаем обратную запись для пользователя
+        cur.execute(
+            'INSERT INTO "friends" ("user_id", "friend_id", "status") VALUES (%s, %s, %s)',
+            (current_user.id, friend_id, 1),
+        )
+
+        # получаем данные нового друга
+        friend_data = cur.execute(
+            'SELECT "id", "username", "logo" FROM "user" WHERE "id" = %s',
+            (friend_id,),
+        ).fetchone()
+        if not friend_data:
+            return (
+                jsonify({"status": "error", "message": "Friend not found"}),
+                404,
+            )
+        # если друг найден, формируем json
+        friend = {
+            "id": friend_data[0],
+            "username": friend_data[1],
+            "logo": friend_data[2],
+            "status": 1,
+        }
+
+        con.commit()
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "Friend request accepted",
+                    "friend": friend,
+                }
+            ),
+            200,
+        )
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/friends/delete-friend", methods=["POST"])
+def delete_friend():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    request_data = request.get_json()
+    friend_id = request_data.get("id")
+
+    try:
+        con, cur = db_connect()
+        # удаляем обе связанные записи
+        cur.execute(
+            'DELETE FROM "friends" WHERE ("user_id" = %s AND "friend_id" = %s) OR ("user_id" = %s AND "friend_id" = %s)',
+            (current_user.id, friend_id, friend_id, current_user.id),
+        )
+        con.commit()
+        return jsonify({"status": "success", "message": "Friend deleted"}), 200
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+@app.route("/friends/cancel-request", methods=["POST"])
+def cancel_friend_request():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    request_data = request.get_json()
+    friend_id = request_data.get("id")
+
+    try:
+        con, cur = db_connect()
+        cur.execute(
+            'DELETE FROM "friends" WHERE "user_id" = %s AND "friend_id" = %s',
+            (current_user.id, friend_id),
+        )
+        con.commit()
+        return jsonify({"status": "success", "message": "Friend request canceled"}), 200
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close() 
+            
+@app.route("/friends/decline-request", methods=["POST"])
+def decline_friend_request():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    request_data = request.get_json()
+    friend_id = request_data.get("id")
+
+    try:
+        con, cur = db_connect()
+        cur.execute(
+            'DELETE FROM "friends" WHERE "user_id" = %s AND "friend_id" = %s',
+            (friend_id, current_user.id),
+        )
+        con.commit()
+        return jsonify({"status": "success", "message": "Friend request declined"}), 200
     except Exception as e:
         app.logger.error(f"Error: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500

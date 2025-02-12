@@ -1,4 +1,5 @@
 import { Categories, Category } from './category';
+import { Friend, Friends } from './friend';
 import { Transactions } from './transaction';
 import { User } from './user';
 
@@ -26,4 +27,14 @@ export interface AddCategoryResponse extends ApiResponse {
 
 export interface TransactionsResponse extends ApiResponse {
   transactions?: Transactions;
+}
+
+export interface FriendsResponse extends ApiResponse {
+  friends?: Friends;
+  outgoing_requests?: Friends;
+  incoming_requests?: Friends;
+}
+
+export interface FriendRequestResponse extends ApiResponse {
+  friend?: Friend;
 }

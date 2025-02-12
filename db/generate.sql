@@ -11,7 +11,7 @@ CREATE TABLE "user" (
 CREATE TABLE "friends" (
     "user_id" INT NOT NULL,
     "friend_id" INT NOT NULL,
-    "status" SMALLINT,
+    "status" SMALLINT NOT NULL,
     PRIMARY KEY ("user_id", "friend_id"),
     FOREIGN KEY ("user_id") REFERENCES "user"("id"),
     FOREIGN KEY ("friend_id") REFERENCES "user"("id")

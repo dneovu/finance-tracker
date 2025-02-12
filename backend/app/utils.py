@@ -69,3 +69,29 @@ def format_transactions(transactions):
         }
         for transaction in transactions
     }
+
+
+def format_friends_and_requests(data):
+    friends = []
+    outgoing_requests = []
+
+    for item in data:
+        friend_data = {
+            "id": item[0],
+            "status": item[1],
+            "username": item[2],
+            "logo": item[3],
+        }
+        if item[4] == "friend":
+            friends.append(friend_data)
+        else:
+            outgoing_requests.append(friend_data)
+
+    return friends, outgoing_requests
+
+
+def format_incoming_requests(data):
+    return [
+        {"id": req[0], "status": req[1], "username": req[2], "logo": req[3]}
+        for req in data
+    ]

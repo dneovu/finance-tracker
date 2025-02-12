@@ -5,17 +5,20 @@ import ProfileProvider from '../context/ProfileProvider.js';
 import { BrowserRouter } from 'react-router';
 import CateroryProvider from '../context/CategoryProvider.js';
 import TransactionProvider from '../context/TransactionProvider.js';
+import FriendProvider from '../context/FriendProvider.js';
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <AuthProvider>
     <ProfileProvider>
-      <CateroryProvider>
-        <TransactionProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </TransactionProvider>
-      </CateroryProvider>
+      <FriendProvider>
+        <CateroryProvider>
+          <TransactionProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </TransactionProvider>
+        </CateroryProvider>
+      </FriendProvider>
     </ProfileProvider>
   </AuthProvider>
 );

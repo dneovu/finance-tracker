@@ -3,3 +3,4 @@ export * from './apiResponse';
 export * from './ProviderProps';
 export * from './category';
 export * from './transaction';
+export * from './friend';
