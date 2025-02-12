@@ -1,5 +1,12 @@
 import { createContext } from 'react';
-import { TransactionsResponse, Transactions, ApiResponse } from '../types';
+import {
+  TransactionsResponse,
+  Transactions,
+  ApiResponse,
+  BudgetsResponse,
+  Budgets,
+  Budget,
+} from '../types';
 
 interface TransactionContextType {
   transactions: Transactions;
@@ -10,6 +17,15 @@ interface TransactionContextType {
     category_id: number
   ) => Promise<TransactionsResponse>;
   deleteTransaction: (id: number) => Promise<ApiResponse>;
+  budgets: Budgets;
+  addBudget: (
+    amount: number,
+    start_date: string,
+    end_date: string,
+    category_id: number | null
+  ) => Promise<BudgetsResponse>;
+  checkBudgetExceeded: (budget: Budget) => boolean;
+  deleteBudget: (id: number) => Promise<ApiResponse>;
 }
 
 const transactionContextReject = async () =>
@@ -20,6 +36,10 @@ const defaultTransactionContext: TransactionContextType = {
   areTransactionsLoading: false,
   addTransaction: transactionContextReject,
   deleteTransaction: transactionContextReject,
+  budgets: [],
+  addBudget: transactionContextReject,
+  checkBudgetExceeded: () => false,
+  deleteBudget: transactionContextReject,
 };
 
 const TransactionContext = createContext<TransactionContextType>(

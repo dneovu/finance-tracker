@@ -598,6 +598,149 @@ def delete_transaction():
             con.close()
 
 
+@app.route("/budgets", methods=["GET"])
+def get_budgets():
+    if request.method != "GET":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    try:
+        con, cur = db_connect()
+
+        res = cur.execute(
+            """
+            SELECT "id", "amount", "start_date", "end_date", "category_id" 
+            FROM "budget"
+            WHERE ("category_id" IS NULL AND "user_id" = %s) OR "category_id" IN (
+                SELECT "id" FROM "category" WHERE "user_id" = %s
+            )
+            """,
+            (
+                current_user.id,
+                current_user.id,
+            ),
+        ).fetchall()
+
+        budgets = [
+            {
+                "id": row[0],
+                "amount": float(row[1]),
+                "start_date": row[2].isoformat(),
+                "end_date": row[3].isoformat(),
+                "category_id": row[4],
+            }
+            for row in res
+        ]
+
+        return jsonify({"status": "success", "budgets": budgets}), 200
+
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/add-budget", methods=["POST"])
+def add_budget():
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    request_data = request.get_json()
+    amount = request_data.get("amount")
+    start_date = request_data.get("start_date")
+    end_date = request_data.get("end_date")
+    category_id = request_data.get("category_id")  # может быть null
+
+    if not amount or not start_date or not end_date:
+        return jsonify({"status": "error", "message": "Missing required fields"}), 400
+
+    try:
+        con, cur = db_connect()
+
+        # проверяем, есть ли эта категория у пользователя
+        if category_id:
+            category_check = cur.execute(
+                """SELECT id FROM "category" WHERE id = %s AND user_id = %s""",
+                (category_id, current_user.id),
+            ).fetchone()
+
+            if not category_check:
+                return jsonify({"status": "error", "message": "Invalid category"}), 400
+
+        res = cur.execute(
+            """
+            INSERT INTO "budget" ("amount", "start_date", "end_date", "category_id", "user_id")
+            VALUES (%s, %s, %s, %s, %s) 
+            RETURNING "id", "amount", "start_date", "end_date", "category_id";
+            """,
+            (
+                amount,
+                start_date,
+                end_date,
+                category_id,
+                current_user.id,
+            ),
+        ).fetchone()
+        con.commit()
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "budget": {
+                        "id": res[0],
+                        "amount": float(res[1]),
+                        "start_date": res[2].isoformat(),
+                        "end_date": res[3].isoformat(),
+                        "category_id": res[4],
+                    },
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
+@app.route("/delete-budget", methods=["POST"])
+def delete_budget():
+    if request.method != "POST":
+        return error_response("METHOD_NOT_ALLOWED", 405)
+    if not current_user.is_authenticated:
+        return error_response("USER_NOT_LOGGED_IN", 401)
+
+    request_data = request.get_json()
+    budget_id = request_data.get("id")
+
+    try:
+        con, cur = db_connect()
+        user_has_budget = cur.execute(
+            'SELECT "id" FROM "budget" WHERE "id" = %s AND "user_id" = %s',
+            (budget_id, current_user.id),
+        ).fetchone()
+
+        if not user_has_budget:
+            return jsonify({"status": "error", "message": "Unauthorized"}), 401
+
+        cur.execute('DELETE FROM "budget" WHERE "id" = %s', (budget_id,))
+        con.commit()
+        return jsonify({"status": "success", "message": "Budget deleted"}), 200
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        if con:
+            con.close()
+
+
 @app.route("/friends", methods=["GET"])
 def get_friends():
     if request.method != "GET":

@@ -1,3 +1,4 @@
+import { Budgets } from './budget';
 import { Categories, Category } from './category';
 import { Friend, Friends } from './friend';
 import { Reminder, Reminders } from './reminder';
@@ -47,4 +48,8 @@ export interface RemindersResponse extends ApiResponse {
 
 export interface AddReminderResponse extends ApiResponse {
   reminder?: Reminder;
+}
+
+export interface BudgetsResponse extends ApiResponse {
+  budgets?: Budgets;
 }
