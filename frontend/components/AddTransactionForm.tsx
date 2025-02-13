@@ -33,7 +33,7 @@ const AddTransactionForm = () => {
           <div className="flex flex-col">
             <label htmlFor="amount">Сумма</label>
             <input
-              className="border-2 border-slate-700 px-2 py-1 focus:outline-none"
+              className="border-background rounded border-1 px-2 py-1 focus:outline-none"
               type="number"
               inputMode="numeric"
               name="amount"
@@ -51,7 +51,7 @@ const AddTransactionForm = () => {
           <select
             name="category-select"
             id="category-select"
-            className="border-2 border-slate-700 px-2 py-1 focus:outline-none"
+            className="border-background rounded border-1 px-2 py-1 focus:outline-none"
             onChange={(e) => setCategoryId(e.target.value)}
           >
             {Object.values(categories).map((category: Category) => (
@@ -66,7 +66,7 @@ const AddTransactionForm = () => {
           </select>
         </div>
         <button
-          className="mt-4 cursor-pointer rounded-md border-2 border-slate-700 bg-slate-50 px-4 py-2"
+          className="border-primary hover:border-background mt-4 cursor-pointer rounded-md border-1 bg-slate-50 px-4 py-2 transition-all"
           type="submit"
         >
           Добавить

@@ -1,11 +1,13 @@
 import { FormEvent, useState } from 'react';
 import useProfile from '../hooks/useProfile';
-import AuthInput from './AuthInput';
+import InputWithValidation from './InputWithValidation';
 import isAuthInputValid from '../utils/isAuthInputValid';
+import DropdownForm from './DropdownForm';
 
 const ChangeUsernameForm = () => {
   const { changeUsername } = useProfile();
   const [newUsername, setNewUsername] = useState('');
+  const [isOpen, setIsOpen] = useState(false); // отображение формы
 
   const handleUpdateUsername = async (e: FormEvent) => {
     e.preventDefault();
@@ -20,9 +22,14 @@ const ChangeUsernameForm = () => {
   };
 
   return (
-    <form className="flex w-fit flex-col gap-3" onSubmit={handleUpdateUsername}>
-      <h2>Изменение логина</h2>
-      <AuthInput
+    <DropdownForm
+      isOpen={isOpen}
+      setIsOpen={() => setIsOpen((prev) => !prev)}
+      handleSubmitForm={handleUpdateUsername}
+      title="Изменить логин"
+      buttonText="Сохранить"
+    >
+      <InputWithValidation
         labelName="Новый логин"
         id="newUsername"
         type="text"
@@ -30,10 +37,7 @@ const ChangeUsernameForm = () => {
         setValue={setNewUsername}
         isValid={isAuthInputValid}
       />
-      <button type="submit" className="w-fit cursor-pointer text-red-600">
-        Изменить логин
-      </button>
-    </form>
+    </DropdownForm>
   );
 };
 

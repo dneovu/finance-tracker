@@ -16,10 +16,10 @@ const AuthInput = ({
   isValid,
 }: AuthInputProps) => (
   <div className="flex flex-col">
-    <label htmlFor={id}>{labelName}</label>
+    <label htmlFor={id} className="text-[1rem]">{labelName}</label>
     <input
       className={`border-2 px-2 py-1 focus:outline-none ${
-        isValid(value) ? 'border-green-500' : 'border-slate-700'
+        isValid(value) ? 'border-secondary' : 'border-primary'
       }`}
       type={type}
       name={id}

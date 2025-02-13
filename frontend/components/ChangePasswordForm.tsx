@@ -1,12 +1,14 @@
 import { FormEvent, useState } from 'react';
 import useProfile from '../hooks/useProfile';
-import AuthInput from './AuthInput';
+import InputWithValidation from './InputWithValidation';
 import isAuthInputValid from '../utils/isAuthInputValid';
+import DropdownForm from './DropdownForm';
 
 const ChangePasswordForm = () => {
   const { changePassword } = useProfile();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [isOpen, setIsOpen] = useState(false); // отображение формы
 
   const handleUpdatePassword = async (e: FormEvent) => {
     e.preventDefault();
@@ -22,9 +24,14 @@ const ChangePasswordForm = () => {
   };
 
   return (
-    <form className="flex w-fit flex-col gap-3" onSubmit={handleUpdatePassword}>
-      <h2>Изменение пароля</h2>
-      <AuthInput
+    <DropdownForm
+      isOpen={isOpen}
+      setIsOpen={() => setIsOpen((prev) => !prev)}
+      handleSubmitForm={handleUpdatePassword}
+      title="Изменить пароль"
+      buttonText="Сохранить"
+    >
+      <InputWithValidation
         labelName="Текущий пароль"
         id="currentPassword"
         type="password"
@@ -32,7 +39,7 @@ const ChangePasswordForm = () => {
         setValue={setCurrentPassword}
         isValid={isAuthInputValid}
       />
-      <AuthInput
+      <InputWithValidation
         labelName="Новый пароль"
         id="newPassword"
         type="password"
@@ -40,10 +47,7 @@ const ChangePasswordForm = () => {
         setValue={setNewPassword}
         isValid={isAuthInputValid}
       />
-      <button type="submit" className="w-fit cursor-pointer text-red-600">
-        Изменить пароль
-      </button>
-    </form>
+    </DropdownForm>
   );
 };
 

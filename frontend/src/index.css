@@ -1,1 +1,9 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-inter: 'Inter Tight', sans-serif;
+  --color-background: #27272a; /* bg-zinc-800 */
+  --color-primary: rgb(234, 216, 189);
+  --color-secondary: #c599ff;
+}

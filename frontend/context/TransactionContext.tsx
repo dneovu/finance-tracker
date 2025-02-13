@@ -24,7 +24,10 @@ interface TransactionContextType {
     end_date: string,
     category_id: number | null
   ) => Promise<BudgetsResponse>;
-  checkBudgetExceeded: (budget: Budget) => boolean;
+  checkBudgetExceeded: (budget: Budget) => {
+    isExceeded: boolean;
+    totalSpent: number;
+  };
   deleteBudget: (id: number) => Promise<ApiResponse>;
 }
 
@@ -38,7 +41,12 @@ const defaultTransactionContext: TransactionContextType = {
   deleteTransaction: transactionContextReject,
   budgets: [],
   addBudget: transactionContextReject,
-  checkBudgetExceeded: () => false,
+  checkBudgetExceeded: () => {
+    return {
+      isExceeded: false,
+      totalSpent: 0,
+    };
+  },
   deleteBudget: transactionContextReject,
 };
 

@@ -49,7 +49,7 @@ def register():
         return validation_error
 
     password_hash = generate_password_hash(password)
-    DEFAULT_USER_LOGO = "https://res.cloudinary.com/deuyjjozh/image/upload/v1738588834/avatars/ndlc02bbbezws3gxruzr.jpg"
+    DEFAULT_USER_LOGO = "https://res.cloudinary.com/deuyjjozh/image/upload/v1738588834/avatars/z1dqhfw2ifxxbcld6q2w"
 
     try:
         con, cur = db_connect()

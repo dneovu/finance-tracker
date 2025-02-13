@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import isAuthInputValid from '../utils/isAuthInputValid';
-import AuthInput from '../components/AuthInput';
+import InputWithValidation from '../components/InputWithValidation';
 import useAuth from '../hooks/useAuth';
 import AuthLayout from '../components/AuthLayout';
 import { useNavigate } from 'react-router';
@@ -28,7 +28,7 @@ const Login = () => {
     <AuthLayout>
       <h1 className="font-bold">Вход в систему</h1>
       <form className="flex flex-col gap-2" onSubmit={handleLogin}>
-        <AuthInput
+        <InputWithValidation
           labelName="Логин"
           id="username"
           type="text"
@@ -36,7 +36,7 @@ const Login = () => {
           setValue={setUsername}
           isValid={isAuthInputValid}
         />
-        <AuthInput
+        <InputWithValidation
           labelName="Пароль"
           id="password"
           type="password"

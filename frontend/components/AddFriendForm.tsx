@@ -1,41 +1,41 @@
 import { FormEvent, useState } from 'react';
 import useFriends from '../hooks/useFriends';
+import DropdownForm from './DropdownForm';
 
 const AddFriendForm = () => {
   const { sendFriendRequest } = useFriends();
   const [friendSearch, setFriendSearch] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
   const searchHandler = async (e: FormEvent) => {
     e.preventDefault();
-
     await sendFriendRequest(friendSearch);
   };
 
   return (
-    <div className="flex w-fit flex-col">
-      <h2 className="font-bold">Добавить друга</h2>
-      <form className="flex flex-col gap-3" onSubmit={searchHandler}>
-        <div className="flex flex-col">
-          <label htmlFor="add-category">Логин пользователя</label>
-          <input
-            className="border-2 border-slate-700 px-2 py-1 focus:outline-none"
-            type="text"
-            name="friend-search"
-            id="friend-search"
-            minLength={6}
-            placeholder="Введите логин"
-            value={friendSearch}
-            onChange={(e) => setFriendSearch(e.target.value)}
-          />
-        </div>
-        <button
-          className="mt-4 cursor-pointer rounded-md border-2 border-slate-700 bg-slate-50 px-4 py-2"
-          type="submit"
-        >
-          Добавить
-        </button>
-      </form>
-    </div>
+    <DropdownForm
+      isOpen={isOpen}
+      setIsOpen={() => setIsOpen((prev) => !prev)}
+      handleSubmitForm={searchHandler}
+      title="Добавить друга"
+      buttonText="Добавить"
+    >
+      <div className="flex flex-col">
+        <label htmlFor="friend-search">Логин пользователя</label>
+        <input
+          className={`border-2 px-2 py-1 focus:outline-none ${
+            friendSearch.length >= 6 ? 'border-secondary' : 'border-primary'
+          }`}
+          type="text"
+          name="friend-search"
+          id="friend-search"
+          required
+          minLength={6}
+          value={friendSearch}
+          onChange={(e) => setFriendSearch(e.target.value)}
+        />
+      </div>
+    </DropdownForm>
   );
 };
 

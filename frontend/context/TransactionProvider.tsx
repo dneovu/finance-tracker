@@ -162,7 +162,7 @@ const TransactionProvider = ({ children }: ProviderProps) => {
 
     const endDate = new Date(budget.end_date);
     endDate.setHours(23, 59, 59, 999); // конец дня в UTC
-    const totalSpent = Object.values(transactions)
+    const totalSpent: number = Object.values(transactions)
       .filter((t: Transaction) => {
         const transactionDate = new Date(t.date + 'Z'); // приводим к UTC
         return (
@@ -177,7 +177,10 @@ const TransactionProvider = ({ children }: ProviderProps) => {
         return sum + amount;
       }, 0);
 
-    return totalSpent > budget.amount;
+    return {
+      isExceeded: totalSpent > budget.amount,
+      totalSpent,
+    };
   };
 
   const deleteBudget = async (id: Budget['id']) => {

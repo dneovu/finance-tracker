@@ -18,10 +18,11 @@ const FriendItem = ({ friend, isIncomingRequest = false }: FriendItemProps) => {
     status: Friend['status'],
     isIncomingRequest = false
   ) => {
-    const className = 'cursor-pointer';
+    const className =
+      'cursor-pointer hover:text-secondary transition-colors duration-200';
     if (status === 0) {
       return isIncomingRequest ? (
-        <div className="flex w-fit flex-col">
+        <div className="mt-2 flex gap-2">
           <button
             className={className}
             onClick={() => acceptFriendRequest(friend.id)}
@@ -55,13 +56,22 @@ const FriendItem = ({ friend, isIncomingRequest = false }: FriendItemProps) => {
   };
 
   const buttons = statusToAdditionalButtons(friend.status, isIncomingRequest);
+
   return (
-    <div>
-      <p>Имя: {friend.username}</p>
-      <p>
-        Логотип: <img src={friend.logo} width="100" alt="Friend's logo" />
-      </p>
-      {buttons}
+    <div className="bg-primary hover:border-secondary shadow-secondary group flex h-fit max-w-96 items-center gap-4 rounded-lg border border-gray-300 p-4 tracking-wide shadow-sm transition-all duration-300">
+      <img
+        src={friend.logo}
+        width="100px"
+        alt="Friend's logo"
+        className="border-secondary rounded-full border-2"
+      />
+
+      <div className="flex flex-col">
+        <p className="text-background mt-auto text-lg font-semibold">
+          {friend.username}
+        </p>
+        {buttons}
+      </div>
     </div>
   );
 };

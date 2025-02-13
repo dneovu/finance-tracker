@@ -1,48 +1,44 @@
-import { NavLink } from 'react-router';
 import useAuth from '../hooks/useAuth';
+import RouteWrapper from '../components/RouteWrapper';
+import HomeLink from '../components/HomeLink';
 
 const Home = () => {
-  const { user, isUserLoading, logout } = useAuth();
+  const { user, isUserLoading } = useAuth();
 
   if (!isUserLoading)
     return (
-      <div className="flex flex-col gap-3">
-        {user ? (
-          <>
-            <h2>
-              Добро пожаловать,&nbsp;
-              <span className="font-bold">{user.username}</span>
-            </h2>
-            <NavLink className="w-fit underline" to="/profile" end>
-              Профиль
-            </NavLink>
-            <NavLink className="w-fit underline" to="/categories" end>
-              Категории
-            </NavLink>
-            <NavLink className="w-fit underline" to="/transactions" end>
-              Транзакции
-            </NavLink>
-            <NavLink className="w-fit underline" to="/reminders" end>
-              Напоминания
-            </NavLink>
-            <NavLink className="w-fit underline" to="/friends" end>
-              Друзья
-            </NavLink>
-            <button className="w-fit cursor-pointer underline" onClick={logout}>
-              Выйти
-            </button>
-          </>
-        ) : (
-          <>
-            <NavLink className="w-fit underline" to="/login" end>
-              Войти
-            </NavLink>
-            <NavLink className="w-fit underline" to="/register" end>
-              Зарегистрироваться
-            </NavLink>
-          </>
-        )}
-      </div>
+      <RouteWrapper>
+        <div className="flex flex-col gap-6 px-5">
+          {user ? (
+            <>
+              <h1 className="text-primary text-3xl mb-7 tracking-wide">
+                Добро пожаловать,&nbsp;
+                <span className="font-bold tracking-widest">{user.username}</span>
+              </h1>
+              <HomeLink route="/profile" text="Профиль" />
+              <HomeLink route="/friends" text="Друзья" />
+              <HomeLink route="/categories" text="Категории" />
+              <HomeLink route="/transactions" text="Транзакции" />
+              <HomeLink route="/reminders" text="Напоминания" />
+
+              {/* <button
+                className="w-fit cursor-pointer underline"
+                onClick={logout}
+              >
+                Выйти
+              </button> */}
+            </>
+          ) : (
+            <div className='flex flex-col gap-5'>
+              <h1 className="text-primary text-3xl mb-7 tracking-wide">
+                Трекер финансов
+              </h1>
+              <HomeLink route="/login" text="Войти" />
+              <HomeLink route="/register" text="Регистрация" />
+            </div>
+          )}
+        </div>
+      </RouteWrapper>
     );
 };
 

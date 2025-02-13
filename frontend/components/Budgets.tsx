@@ -97,14 +97,16 @@ const Budgets = () => {
       </div>
       <button
         onClick={handleAddBudget}
-        className="mt-4 w-fit cursor-pointer rounded-md border-2 border-slate-700 bg-slate-50 px-4 py-2"
+        className="border-primary hover:border-background mt-4 w-fit cursor-pointer rounded-md border-1 bg-slate-50 px-4 py-2 transition-all"
       >
         Установить бюджет
       </button>
       <h2>Ваши бюджеты</h2>
       {budgets.map((budget) => {
-        const isExceeded = checkBudgetExceeded(budget);
-
+        const { isExceeded, totalSpent } = checkBudgetExceeded(budget);
+        const overBudget = isExceeded
+          ? `+${totalSpent - budget.amount}`
+          : totalSpent - budget.amount;
         return (
           <div className="flex gap-3" key={budget.id}>
             <p
@@ -115,10 +117,10 @@ const Budgets = () => {
               {budget.category_id
                 ? `Категория: ${categories[budget.category_id].name}`
                 : 'Общий бюджет'}{' '}
-              - {budget.amount} ₽
+              {budget.amount} ₽ ({overBudget})
             </p>
             <p>
-              {format(budget.start_date, 'dd-MM-yy')} -
+              {format(budget.start_date, 'dd-MM-yy')} -{' '}
               {format(budget.end_date, 'dd-MM-yy')}
             </p>
             <button

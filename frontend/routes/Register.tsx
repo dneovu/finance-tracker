@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import isAuthInputValid from '../utils/isAuthInputValid';
 import useAuth from '../hooks/useAuth';
-import AuthInput from '../components/AuthInput';
+import InputWithValidation from '../components/InputWithValidation';
 import AuthLayout from '../components/AuthLayout';
 import { useNavigate } from 'react-router';
 
@@ -35,7 +35,7 @@ const Register = () => {
     <AuthLayout>
       <h1 className="font-bold">Регистрация</h1>
       <form className="flex flex-col gap-2" onSubmit={handleRegister}>
-        <AuthInput
+        <InputWithValidation
           labelName="Логин"
           id="username"
           type="text"
@@ -43,7 +43,7 @@ const Register = () => {
           setValue={setUsername}
           isValid={isAuthInputValid}
         />
-        <AuthInput
+        <InputWithValidation
           labelName="Пароль"
           id="password"
           type="password"
@@ -51,7 +51,7 @@ const Register = () => {
           setValue={setPassword}
           isValid={isAuthInputValid}
         />
-        <AuthInput
+        <InputWithValidation
           labelName="Подтвердите пароль"
           id="confirmPassword"
           type="password"

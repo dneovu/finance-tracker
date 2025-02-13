@@ -2,6 +2,7 @@ import { useState } from 'react';
 import useFriends from '../hooks/useFriends';
 import { Friend } from '../types';
 import useReminders from '../hooks/useReminders';
+import DropdownForm from './DropdownForm';
 
 const AddSharedReminderForm = () => {
   const { friendsData } = useFriends();
@@ -10,6 +11,7 @@ const AddSharedReminderForm = () => {
   const [selectedFriends, setSelectedFriends] = useState<
     Record<number, number>
   >({});
+  const [isOpen, setIsOpen] = useState(false);
 
   //  форматируем для `min` в `datetime-local`
   const getMinDateTime = () => {
@@ -54,77 +56,84 @@ const AddSharedReminderForm = () => {
       new Date(dueDate),
       selectedFriends
     );
+
+    if (res.status === 'success') {
+      setName('');
+      setDueDate(getMinDateTime());
+      setSelectedFriends({});
+    }
     console.log(res);
   };
 
   return (
-    <div className="w-fit rounded-md border border-gray-300 p-4">
-      <h2 className="text-lg font-bold">Добавить общее напоминание</h2>
-      <form className="mt-2 flex flex-col gap-3" onSubmit={handleSubmit}>
-        <div className="flex flex-col">
-          <label htmlFor="reminder-name">Название</label>
-          <input
-            id="reminder-name"
-            type="text"
-            maxLength={20}
-            className="border px-2 py-1 focus:outline-none"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
+    <DropdownForm
+      isOpen={isOpen}
+      setIsOpen={() => setIsOpen((prev) => !prev)}
+      handleSubmitForm={handleSubmit}
+      title="Добавить общее напоминание"
+      buttonText="Создать"
+    >
+      <div className="flex flex-col">
+        <label htmlFor="reminder-name">Название</label>
+        <input
+          id="reminder-name"
+          type="text"
+          required
+          minLength={1}
+          maxLength={20}
+          className="border-primary border-2 px-2 py-1 focus:outline-none"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </div>
 
-        <div className="flex flex-col">
-          <label htmlFor="reminder-date">Дата и время</label>
-          <input
-            id="reminder-date"
-            type="datetime-local"
-            className="border px-2 py-1 focus:outline-none"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            min={getMinDateTime()} // блокируем выбор прошлого времени
-          />
-        </div>
+      <div className="flex flex-col">
+        <label htmlFor="reminder-date">Дата и время</label>
+        <input
+          id="reminder-date"
+          type="datetime-local"
+          className="border-primary border-2 px-2 py-1 focus:outline-none"
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
+          min={getMinDateTime()} // блокируем выбор прошлого времени
+        />
+      </div>
 
-        <div className="flex flex-col">
-          <label>Выберите друзей:</label>
-          {friendsData.friends.length === 0 ? (
-            <p className="text-gray-500">У вас нет друзей</p>
-          ) : (
-            friendsData.friends.map((friend: Friend) => (
-              <div key={friend.id} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id={`friend-${friend.id}`}
-                  checked={friend.id in selectedFriends}
-                  onChange={() => toggleFriendSelection(friend.id)}
-                />
-                <label htmlFor={`friend-${friend.id}`}>{friend.username}</label>
+      <div className="flex flex-col gap-2">
+        <label>Выберите друзей:</label>
+        {friendsData.friends.length === 0 ? (
+          <p className="text-gray-500">У вас нет друзей</p>
+        ) : (
+          friendsData.friends.map((friend: Friend) => (
+            <div key={friend.id} className="flex items-center gap-1">
+              <input
+                type="checkbox"
+                id={`friend-${friend.id}`}
+                checked={friend.id in selectedFriends}
+                onChange={() => toggleFriendSelection(friend.id)}
+              />
+              <label htmlFor={`friend-${friend.id}`}>{friend.username}</label>
 
-                {friend.id in selectedFriends && (
+              {friend.id in selectedFriends && (
+                <div className="flex items-center gap-2">
                   <input
                     type="number"
                     min="1"
                     placeholder="Сумма"
-                    className="w-24 border px-2 py-1"
+                    className="border-primary w-24 border-2 px-2 py-1 focus:outline-none"
                     value={selectedFriends[friend.id]}
                     onChange={(e) =>
                       handleAmountChange(friend.id, Number(e.target.value))
                     }
                   />
-                )}
-              </div>
-            ))
-          )}
-        </div>
-
-        <button
-          type="submit"
-          className="mt-4 rounded-md border bg-blue-500 px-4 py-2 text-white"
-        >
-          Создать
-        </button>
-      </form>
-    </div>
+                  <span>₽</span>
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+    </DropdownForm>
   );
 };
 
