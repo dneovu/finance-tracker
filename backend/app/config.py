@@ -19,8 +19,8 @@ class Config(object):
     SESSION_PERMANENT = False
     SESSION_USE_SIGNER = True
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SECURE = True
-    SESSION_COOKIE_SAMESITE = "Lax"  # отправка куки только для запросов с того же сайта
+    SESSION_COOKIE_SECURE = True  # должно быть True для HTTPS
+    SESSION_COOKIE_SAMESITE = "None"  # разрешает куки между разными доменами
 
     # настройки cloudinary
     CLOUD_NAME = os.environ.get("CLOUD_NAME")
