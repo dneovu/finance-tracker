@@ -821,7 +821,7 @@ def add_friend():
             (friend_name,),
         ).fetchone()
         # если пользователя не существует
-        if not friend_data:
+        if not friend_data or friend_data[1] == current_user.username:
             return error_response("INVALID_USERNAME", 404)
 
         friend_id, friend_username, friend_logo = friend_data  # Распаковываем данные
