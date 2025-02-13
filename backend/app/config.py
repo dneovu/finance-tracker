@@ -12,6 +12,7 @@ class Config(object):
     DB_USER = os.environ.get("DB_USER")
     DB_PASSWORD = os.environ.get("DB_PASSWORD")
     DB_NAME = os.environ.get("DB_NAME")
+    DB_PORT = os.environ.get("DB_PORT") or "5432"
 
     # настройки сессий
     SESSION_TYPE = "filesystem"
