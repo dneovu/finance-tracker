@@ -24,7 +24,7 @@ const Friends = () => {
             isIncomingRequest
           />
           <FriendsSection title="Исходящие заявки" friends={outgoingRequests} />
-          <FriendsSection friends={friends} />
+          <FriendsSection friends={friends} title="Ваши друзья" />
         </>
       )}
     </RouteWrapper>

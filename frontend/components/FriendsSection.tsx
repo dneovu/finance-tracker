@@ -2,7 +2,7 @@ import { Friend } from '../types';
 import FriendItem from './FriendItem';
 
 interface FriendsSectionProps {
-  title?: string;
+  title: string;
   friends: Friend[];
   isIncomingRequest?: boolean;
 }
