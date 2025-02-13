@@ -35,6 +35,7 @@ const Reminders = () => {
 
           return (
             <ReminderItem
+              key={reminder.id}
               reminder={reminder}
               deactivateReminder={deactivateReminder}
               isShared={true}
@@ -57,9 +58,10 @@ const Reminders = () => {
 
           return (
             <ReminderItem
+              key={reminder.id}
               reminder={reminder}
               deactivateReminder={deactivateReminder}
-              isShared={true}
+              isShared={false}
               localDate={localDate}
             />
           );

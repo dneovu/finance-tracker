@@ -67,6 +67,7 @@ const AddReminderForm = () => {
           max="1000000"
           step="any"
           value={amount}
+          required
           onChange={(e) => setAmount(e.target.value)}
         />
       </div>
@@ -77,6 +78,7 @@ const AddReminderForm = () => {
           className="border-primary border-2 px-2 py-1 focus:outline-none"
           min={new Date().toISOString().split('T')[0]}
           value={dueDate}
+          required
           onChange={(e) => setDueDate(e.target.value)}
         />
       </div>
@@ -91,6 +93,7 @@ const AddReminderForm = () => {
               : undefined
           }
           value={dueTime}
+          required
           onChange={(e) => setDueTime(e.target.value)}
         />
       </div>

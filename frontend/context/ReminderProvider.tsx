@@ -142,17 +142,17 @@ const ReminderProvider = ({ children }: ProviderProps) => {
         '/reminders/deactivate-reminder',
         { id }
       );
-      if (isShared) {
-        setRemindersData((prev) => ({
-          ...prev,
-          sharedReminders: prev.sharedReminders.filter((r) => r.id !== id),
-        }));
-      } else {
-        setRemindersData((prev) => ({
-          ...prev,
-          reminders: prev.reminders.filter((r) => r.id !== id),
-        }));
-      }
+      
+      setRemindersData((prev) => ({
+        ...prev,
+        sharedReminders: isShared
+          ? [...prev.sharedReminders.filter((r) => r.id !== id)]
+          : prev.sharedReminders,
+        reminders: !isShared
+          ? [...prev.reminders.filter((r) => r.id !== id)]
+          : prev.reminders,
+      }));
+
       console.log(res.data);
       return res.data;
     } catch (error) {

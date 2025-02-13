@@ -30,6 +30,7 @@ const AddCategoryForm = () => {
           type="text"
           value={newCategoryName}
           setValue={setNewCategoryName}
+          minLength={1}
           isValid={() => newCategoryName.length > 0}
         />
         <div className="flex flex-col">
