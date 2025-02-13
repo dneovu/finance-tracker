@@ -4,7 +4,7 @@ from flask_cors import CORS
 from flask_login import LoginManager
 from app.config import Config
 
-frontend_url = os.environ.get("FRONTEND_URL") or "http://127.0.0.1:5173"
+frontend_url = os.environ.get("FRONTEND_URL")
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True, origins=frontend_url)
