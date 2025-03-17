@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import AddTransactionForm from '../components/AddTransactionForm';
+import AddTransactionForm from '../components/forms/AddTransactionForm';
 import Budgets from '../components/Budgets';
 import TransactionFilter from '../components/TransactionFilter';
-import RouteWrapper from '../components/RouteWrapper';
+import RouteWrapper from '../components/wrappers/RouteWrapper';
 import RouteTitle from '../components/RouteTitle';
-import BackButton from '../components/BackButton';
-import RouteGrowContent from '../components/RouteGrowContent';
+import BackButton from '../components/common/BackButton';
+import RouteGrowContent from '../components/wrappers/RouteGrowContent';
 
 const Transactions = () => {
   const [showTransactions, setShowTransactions] = useState(true);

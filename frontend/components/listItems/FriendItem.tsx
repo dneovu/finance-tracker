@@ -1,5 +1,5 @@
-import useFriends from '../hooks/useFriends';
-import { Friend } from '../types';
+import useFriends from '../../hooks/useFriends';
+import { Friend } from '../../types';
 
 interface FriendItemProps {
   friend: Friend;

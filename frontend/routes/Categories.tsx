@@ -1,11 +1,11 @@
 import useCategories from '../hooks/useCategories';
 import { Category } from '../types';
-import AddCategoryForm from '../components/AddCategoryForm';
-import RouteWrapper from '../components/RouteWrapper';
+import AddCategoryForm from '../components/forms/AddCategoryForm';
+import RouteWrapper from '../components/wrappers/RouteWrapper';
 import RouteTitle from '../components/RouteTitle';
-import CategoryItem from '../components/CategoryItem';
-import RouteGrowContent from '../components/RouteGrowContent';
-import BackButton from '../components/BackButton';
+import CategoryItem from '../components/listItems/CategoryItem';
+import RouteGrowContent from '../components/wrappers/RouteGrowContent';
+import BackButton from '../components/common/BackButton';
 
 const Categories = () => {
   const { categories, deleteCategory } = useCategories();

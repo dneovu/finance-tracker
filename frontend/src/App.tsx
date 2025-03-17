@@ -8,7 +8,7 @@ import Categories from '../routes/Categories';
 import Transactions from '../routes/Transactions';
 import Friends from '../routes/Friends';
 import Reminders from '../routes/Reminders';
-import RouteWrapper from '../components/RouteWrapper';
+import RouteWrapper from '../components/wrappers/RouteWrapper';
 
 interface RouteProps {
   redirectPath?: string;
@@ -16,7 +16,7 @@ interface RouteProps {
 
 const loadingScreen = (
   <RouteWrapper>
-    <p className='text-primary'>Загрузка..</p>
+    <p className="text-primary">Загрузка..</p>
   </RouteWrapper>
 );
 

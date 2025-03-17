@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
-import useProfile from '../hooks/useProfile';
-import InputWithValidation from './InputWithValidation';
-import isAuthInputValid from '../utils/isAuthInputValid';
+import useProfile from '../../hooks/useProfile';
+import InputWithValidation from '../common/InputWithValidation';
+import isAuthInputValid from '../../utils/isAuthInputValid';
 import DropdownForm from './DropdownForm';
 
 const ChangeUsernameForm = () => {

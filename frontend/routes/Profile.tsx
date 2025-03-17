@@ -1,11 +1,11 @@
-import ChangeUsernameForm from '../components/ChangeUsernameForm';
-import ChangePasswordForm from '../components/ChangePasswordForm';
+import ChangeUsernameForm from '../components/forms/ChangeUsernameForm';
+import ChangePasswordForm from '../components/forms/ChangePasswordForm';
 import ManageAvatar from '../components/ManageAvatar';
-import RouteWrapper from '../components/RouteWrapper';
+import RouteWrapper from '../components/wrappers/RouteWrapper';
 import useAuth from '../hooks/useAuth';
 import RouteTitle from '../components/RouteTitle';
-import BackButton from '../components/BackButton';
-import RouteGrowContent from '../components/RouteGrowContent';
+import BackButton from '../components/common/BackButton';
+import RouteGrowContent from '../components/wrappers/RouteGrowContent';
 
 const Profile = () => {
   const { user, logout } = useAuth();

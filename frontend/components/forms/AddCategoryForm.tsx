@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
-import useCategories from '../hooks/useCategories';
+import useCategories from '../../hooks/useCategories';
 import DropdownForm from './DropdownForm';
-import InputWithValidation from './InputWithValidation';
+import InputWithValidation from '../common/InputWithValidation';
 
 const AddCategoryForm = () => {
   const { addCategory } = useCategories();

@@ -1,13 +1,13 @@
 import { format } from 'date-fns';
-import AddReminderForm from '../components/AddReminderForm';
+import AddReminderForm from '../components/forms/AddReminderForm';
 import useReminders from '../hooks/useReminders';
 import { Reminder } from '../types/reminder';
-import AddSharedReminderForm from '../components/AddSharedReminderForm';
-import RouteWrapper from '../components/RouteWrapper';
+import AddSharedReminderForm from '../components/forms/AddSharedReminderForm';
+import RouteWrapper from '../components/wrappers/RouteWrapper';
 import RouteTitle from '../components/RouteTitle';
-import ReminderItem from '../components/ReminderItem';
-import RouteGrowContent from '../components/RouteGrowContent';
-import BackButton from '../components/BackButton';
+import ReminderItem from '../components/listItems/ReminderItem';
+import RouteGrowContent from '../components/wrappers/RouteGrowContent';
+import BackButton from '../components/common/BackButton';
 
 const Reminders = () => {
   const { remindersData, deactivateReminder } = useReminders();

@@ -1,8 +1,8 @@
 import { FormEvent, useState } from 'react';
 import isAuthInputValid from '../utils/isAuthInputValid';
 import useAuth from '../hooks/useAuth';
-import InputWithValidation from '../components/InputWithValidation';
-import AuthLayout from '../components/AuthLayout';
+import InputWithValidation from '../components/common/InputWithValidation';
+import AuthLayout from '../components/wrappers/AuthLayout';
 import { useNavigate } from 'react-router';
 
 const Register = () => {

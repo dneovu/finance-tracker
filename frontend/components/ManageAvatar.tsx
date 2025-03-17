@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import useProfile from '../hooks/useProfile';
 import useAuth from '../hooks/useAuth';
-import SubmitButton from './SubmitButton';
+import SubmitButton from './common/SubmitButton';
 
 const ManageAvatar = () => {
   const { user } = useAuth();
@@ -31,7 +31,7 @@ const ManageAvatar = () => {
         accept="image/png, image/jpg, image/jpeg"
         name="avatarInput"
         id="avatarInput"
-        className="hover:file:bg-primary file:bg-secondary w-fit file:transition-all transition-all text-stone-500 file:mr-5 file:border-[1px] file:px-3 file:py-1 file:text-stone-700 hover:cursor-pointer hover:file:cursor-pointer"
+        className="hover:file:bg-primary file:bg-secondary w-fit text-stone-500 transition-all file:mr-5 file:border-[1px] file:px-3 file:py-1 file:text-stone-700 file:transition-all hover:cursor-pointer hover:file:cursor-pointer"
         onChange={handleInputFile}
       />
       <SubmitButton text="Загрузить" onClick={handleUploadButton} />

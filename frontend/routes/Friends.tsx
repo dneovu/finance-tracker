@@ -1,10 +1,10 @@
-import AddFriendForm from '../components/AddFriendForm';
+import AddFriendForm from '../components/forms/AddFriendForm';
 import useFriends from '../hooks/useFriends';
 import FriendsSection from '../components/FriendsSection';
-import RouteWrapper from '../components/RouteWrapper';
+import RouteWrapper from '../components/wrappers/RouteWrapper';
 import RouteTitle from '../components/RouteTitle';
-import BackButton from '../components/BackButton';
-import RouteGrowContent from '../components/RouteGrowContent';
+import BackButton from '../components/common/BackButton';
+import RouteGrowContent from '../components/wrappers/RouteGrowContent';
 
 const Friends = () => {
   const { friendsData } = useFriends();

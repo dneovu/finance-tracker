@@ -1,8 +1,8 @@
 import { FormEvent, useState } from 'react';
 import isAuthInputValid from '../utils/isAuthInputValid';
-import InputWithValidation from '../components/InputWithValidation';
+import InputWithValidation from '../components/common/InputWithValidation';
 import useAuth from '../hooks/useAuth';
-import AuthLayout from '../components/AuthLayout';
+import AuthLayout from '../components/wrappers/AuthLayout';
 import { useNavigate } from 'react-router';
 
 const Login = () => {
