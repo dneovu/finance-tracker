@@ -9,8 +9,9 @@ import {
 import ReminderContext from './ReminderContext';
 import { Reminder, RemindersData } from '../types/reminder';
 import api from '../utils/api';
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import useAuth from '../hooks/useAuth';
+import handleProviderError from '../utils/handleProviderError';
 
 const ReminderProvider = ({ children }: ProviderProps) => {
   const { isUserAuthenticated } = useAuth();
@@ -34,11 +35,7 @@ const ReminderProvider = ({ children }: ProviderProps) => {
         }
         console.log(res.data);
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error(error.response);
-        } else {
-          console.error(error);
-        }
+        return handleProviderError(error);
       }
     };
     fetchReminders();
@@ -79,13 +76,7 @@ const ReminderProvider = ({ children }: ProviderProps) => {
       console.log(res.data);
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 
@@ -126,13 +117,7 @@ const ReminderProvider = ({ children }: ProviderProps) => {
       console.log(res.data);
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 
@@ -142,7 +127,7 @@ const ReminderProvider = ({ children }: ProviderProps) => {
         '/reminders/deactivate-reminder',
         { id }
       );
-      
+
       setRemindersData((prev) => ({
         ...prev,
         sharedReminders: isShared
@@ -156,13 +141,7 @@ const ReminderProvider = ({ children }: ProviderProps) => {
       console.log(res.data);
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 

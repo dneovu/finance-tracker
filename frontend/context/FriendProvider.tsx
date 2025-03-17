@@ -8,9 +8,10 @@ import {
   ProviderProps,
 } from '../types';
 import useAuth from '../hooks/useAuth';
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import api from '../utils/api';
 import FriendContext from './FriendContext';
+import handleProviderError from '../utils/handleProviderError';
 
 const FriendProvider = ({ children }: ProviderProps) => {
   const { isUserAuthenticated } = useAuth();
@@ -37,11 +38,7 @@ const FriendProvider = ({ children }: ProviderProps) => {
         }
         console.log(res.data);
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error(error.response);
-        } else {
-          console.error(error);
-        }
+        return handleProviderError(error);
       }
     };
 
@@ -65,13 +62,7 @@ const FriendProvider = ({ children }: ProviderProps) => {
       console.log(res.data);
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 
@@ -96,13 +87,7 @@ const FriendProvider = ({ children }: ProviderProps) => {
       console.log(res.data);
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 
@@ -122,13 +107,7 @@ const FriendProvider = ({ children }: ProviderProps) => {
       console.log(res.data);
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 
@@ -150,13 +129,7 @@ const FriendProvider = ({ children }: ProviderProps) => {
       console.log(res.data);
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 
@@ -177,13 +150,7 @@ const FriendProvider = ({ children }: ProviderProps) => {
       console.log(res.data);
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 

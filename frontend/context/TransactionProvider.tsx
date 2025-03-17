@@ -10,10 +10,11 @@ import {
   Budgets,
   ApiResponse,
 } from '../types';
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import { ProviderProps } from '../types';
 import useAuth from '../hooks/useAuth';
 import useCategories from '../hooks/useCategories';
+import handleProviderError from '../utils/handleProviderError';
 
 const TransactionProvider = ({ children }: ProviderProps) => {
   const { isUserAuthenticated } = useAuth();
@@ -32,11 +33,7 @@ const TransactionProvider = ({ children }: ProviderProps) => {
           setTransactions(res.data.transactions);
         }
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error(error.response);
-        } else {
-          console.error(error);
-        }
+        return handleProviderError(error);
       } finally {
         setAreTransactionsLoading(false);
       }
@@ -49,11 +46,7 @@ const TransactionProvider = ({ children }: ProviderProps) => {
           setBudgets(res.data.budgets);
         }
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error(error.response);
-        } else {
-          console.error(error);
-        }
+        return handleProviderError(error);
       }
     };
 
@@ -85,13 +78,7 @@ const TransactionProvider = ({ children }: ProviderProps) => {
       }
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 
@@ -114,13 +101,7 @@ const TransactionProvider = ({ children }: ProviderProps) => {
 
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 
@@ -146,13 +127,7 @@ const TransactionProvider = ({ children }: ProviderProps) => {
 
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 
@@ -193,13 +168,7 @@ const TransactionProvider = ({ children }: ProviderProps) => {
       console.log(res.data);
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 

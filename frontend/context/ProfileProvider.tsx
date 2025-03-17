@@ -1,8 +1,9 @@
 import api from '../utils/api';
 import ProfileContext from './ProfileContext';
 import { ApiAvatarResponse, ApiResponse, ProviderProps } from '../types';
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import useAuth from '../hooks/useAuth';
+import handleProviderError from '../utils/handleProviderError';
 
 const ProfileProvider = ({ children }: ProviderProps) => {
   const { user, updateUser } = useAuth();
@@ -19,13 +20,7 @@ const ProfileProvider = ({ children }: ProviderProps) => {
       updateUser(null); // для обновления сессии
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 
@@ -45,13 +40,7 @@ const ProfileProvider = ({ children }: ProviderProps) => {
       updateUser(null); // для обновления сессии
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 
@@ -76,13 +65,7 @@ const ProfileProvider = ({ children }: ProviderProps) => {
 
       return res.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data);
-        return error.response?.data;
-      } else {
-        console.error(error);
-        return { status: 'error', message: 'Unknown error' };
-      }
+      return handleProviderError(error);
     }
   };
 
