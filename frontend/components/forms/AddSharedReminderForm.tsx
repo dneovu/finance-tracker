@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import useFriends from '../hooks/useFriends';
-import { Friend } from '../types';
-import useReminders from '../hooks/useReminders';
+import useFriends from '../../hooks/useFriends';
+import { Friend } from '../../types';
+import useReminders from '../../hooks/useReminders';
 import DropdownForm from './DropdownForm';
 
 const AddSharedReminderForm = () => {

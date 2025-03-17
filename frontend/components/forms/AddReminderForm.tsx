@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import useReminders from '../hooks/useReminders';
+import useReminders from '../../hooks/useReminders';
 import DropdownForm from './DropdownForm';
 
 const AddReminderForm = () => {

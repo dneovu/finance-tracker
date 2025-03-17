@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
-import useCategories from '../hooks/useCategories';
-import useTransactions from '../hooks/useTransactions';
-import { Category } from '../types';
+import useCategories from '../../hooks/useCategories';
+import useTransactions from '../../hooks/useTransactions';
+import { Category } from '../../types';
 
 const AddTransactionForm = () => {
   const { addTransaction } = useTransactions();

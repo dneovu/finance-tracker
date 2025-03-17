@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import useFriends from '../hooks/useFriends';
+import useFriends from '../../hooks/useFriends';
 import DropdownForm from './DropdownForm';
 
 const AddFriendForm = () => {
