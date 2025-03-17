@@ -1,43 +1,35 @@
-import { FormEvent, useState } from 'react';
+import { useState } from 'react';
 import useReminders from '../../hooks/useReminders';
 import DropdownForm from './DropdownForm';
+import getMinDateTime from '../../utils/getMinDateTime';
 
 const AddReminderForm = () => {
   const { addReminder } = useReminders();
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('1');
-  const [dueDate, setDueDate] = useState('');
-  const [dueTime, setDueTime] = useState('');
+  const [dueDateTime, setDueDateTime] = useState(getMinDateTime());
   const [isOpen, setIsOpen] = useState(false);
 
-  const addReminderHandler = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!dueDate || !dueTime) return;
+    const utcDate = new Date(`${dueDateTime}:00Z`);
 
-    const now = new Date();
-    const selectedDateTime = new Date(`${dueDate}T${dueTime}`);
-
-    if (selectedDateTime <= now) {
-      return;
-    }
-
-    const utcDate = new Date(`${dueDate}T${dueTime}:00Z`);
     const res = await addReminder(Number(amount), name, utcDate);
 
     if (res.status === 'success') {
       setName('');
       setAmount('1');
-      setDueDate('');
-      setDueTime('');
+      setDueDateTime(getMinDateTime());
     }
+    console.log(res);
   };
 
   return (
     <DropdownForm
       isOpen={isOpen}
       setIsOpen={() => setIsOpen((prev) => !prev)}
-      handleSubmitForm={addReminderHandler}
+      handleSubmitForm={handleSubmit}
       title="Создать напоминание"
       buttonText="Создать"
     >
@@ -72,29 +64,14 @@ const AddReminderForm = () => {
         />
       </div>
       <div className="flex flex-col">
-        <label>Дата напоминания</label>
+        <label>Дата и время</label>
         <input
-          type="date"
+          type="datetime-local"
           className="border-primary border-2 px-2 py-1 focus:outline-none"
-          min={new Date().toISOString().split('T')[0]}
-          value={dueDate}
+          min={getMinDateTime()}
+          value={dueDateTime}
           required
-          onChange={(e) => setDueDate(e.target.value)}
-        />
-      </div>
-      <div className="flex flex-col">
-        <label>Время напоминания</label>
-        <input
-          type="time"
-          className="border-primary border-2 px-2 py-1 focus:outline-none"
-          min={
-            dueDate === new Date().toISOString().split('T')[0]
-              ? new Date().toLocaleTimeString('it-IT').slice(0, 5)
-              : undefined
-          }
-          value={dueTime}
-          required
-          onChange={(e) => setDueTime(e.target.value)}
+          onChange={(e) => setDueDateTime(e.target.value)}
         />
       </div>
     </DropdownForm>

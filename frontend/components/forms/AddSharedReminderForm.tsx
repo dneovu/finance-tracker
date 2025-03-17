@@ -3,6 +3,7 @@ import useFriends from '../../hooks/useFriends';
 import { Friend } from '../../types';
 import useReminders from '../../hooks/useReminders';
 import DropdownForm from './DropdownForm';
+import getMinDateTime from '../../utils/getMinDateTime';
 
 const AddSharedReminderForm = () => {
   const { friendsData } = useFriends();
@@ -12,13 +13,6 @@ const AddSharedReminderForm = () => {
     Record<number, number>
   >({});
   const [isOpen, setIsOpen] = useState(false);
-
-  //  форматируем для `min` в `datetime-local`
-  const getMinDateTime = () => {
-    const now = new Date();
-    now.setMinutes(now.getMinutes() - now.getTimezoneOffset()); // коррекция на часовой пояс
-    return now.toISOString().slice(0, 16); // формат "YYYY-MM-DDTHH:MM"
-  };
 
   const [dueDate, setDueDate] = useState(getMinDateTime());
 
@@ -94,6 +88,7 @@ const AddSharedReminderForm = () => {
           type="datetime-local"
           className="border-primary border-2 px-2 py-1 focus:outline-none"
           value={dueDate}
+          required
           onChange={(e) => setDueDate(e.target.value)}
           min={getMinDateTime()} // блокируем выбор прошлого времени
         />

@@ -1,4 +1,4 @@
-import LeftArrow from '../assets/images/LeftArrow.svg?react';
+import LeftArrow from '../../assets/images/LeftArrow.svg?react';
 
 const BackButton = () => {
   return (
