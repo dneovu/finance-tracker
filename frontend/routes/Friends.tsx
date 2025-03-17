@@ -3,6 +3,8 @@ import useFriends from '../hooks/useFriends';
 import FriendsSection from '../components/FriendsSection';
 import RouteWrapper from '../components/RouteWrapper';
 import RouteTitle from '../components/RouteTitle';
+import BackButton from '../components/BackButton';
+import RouteGrowContent from '../components/RouteGrowContent';
 
 const Friends = () => {
   const { friendsData } = useFriends();
@@ -10,23 +12,29 @@ const Friends = () => {
 
   return (
     <RouteWrapper>
-      <RouteTitle text="Друзья" />
-      <AddFriendForm />
-      {friends.length === 0 &&
-      outgoingRequests.length === 0 &&
-      incomingRequests.length === 0 ? (
-        <p className="text-primary">У вас пока нет друзей или заявок.</p>
-      ) : (
-        <>
-          <FriendsSection
-            title="Входящие заявки"
-            friends={incomingRequests}
-            isIncomingRequest
-          />
-          <FriendsSection title="Исходящие заявки" friends={outgoingRequests} />
-          <FriendsSection friends={friends} title="Ваши друзья" />
-        </>
-      )}
+      <RouteGrowContent>
+        <RouteTitle text="Друзья" />
+        <AddFriendForm />
+        {friends.length === 0 &&
+        outgoingRequests.length === 0 &&
+        incomingRequests.length === 0 ? (
+          <p className="text-primary">У вас пока нет друзей или заявок.</p>
+        ) : (
+          <>
+            <FriendsSection
+              title="Входящие заявки"
+              friends={incomingRequests}
+              isIncomingRequest
+            />
+            <FriendsSection
+              title="Исходящие заявки"
+              friends={outgoingRequests}
+            />
+            <FriendsSection friends={friends} title="Ваши друзья" />
+          </>
+        )}
+      </RouteGrowContent>
+      <BackButton />
     </RouteWrapper>
   );
 };

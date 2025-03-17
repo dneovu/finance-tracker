@@ -4,6 +4,8 @@ import AddCategoryForm from '../components/AddCategoryForm';
 import RouteWrapper from '../components/RouteWrapper';
 import RouteTitle from '../components/RouteTitle';
 import CategoryItem from '../components/CategoryItem';
+import RouteGrowContent from '../components/RouteGrowContent';
+import BackButton from '../components/BackButton';
 
 const Categories = () => {
   const { categories, deleteCategory } = useCategories();
@@ -20,37 +22,40 @@ const Categories = () => {
 
   return (
     <RouteWrapper>
-      <RouteTitle text="Категории" />
-      <div className="flex flex-col gap-3">
-        <AddCategoryForm />
-        {!isIncomeLength && !isExpenseLength && (
-          <p className="text-primary">У вас пока нет категорий.</p>
-        )}
+      <RouteGrowContent>
+        <RouteTitle text="Категории" />
         <div className="flex flex-col gap-3">
-          {isIncomeLength && (
-            <h2 className="text-primary text-xl font-semibold">Доход</h2>
+          <AddCategoryForm />
+          {!isIncomeLength && !isExpenseLength && (
+            <p className="text-primary">У вас пока нет категорий.</p>
           )}
-          {incomeCategories.map((category: Category) => (
-            <CategoryItem
-              key={category.id}
-              category={category}
-              deleteCategory={deleteCategory}
-            />
-          ))}
+          <div className="flex flex-col gap-3">
+            {isIncomeLength && (
+              <h2 className="text-primary text-xl font-semibold">Доход</h2>
+            )}
+            {incomeCategories.map((category: Category) => (
+              <CategoryItem
+                key={category.id}
+                category={category}
+                deleteCategory={deleteCategory}
+              />
+            ))}
+          </div>
+          <div className="flex flex-col gap-3">
+            {isExpenseLength && (
+              <h2 className="text-primary text-xl font-semibold">Расход</h2>
+            )}
+            {expenseCategories.map((category: Category) => (
+              <CategoryItem
+                key={category.id}
+                category={category}
+                deleteCategory={deleteCategory}
+              />
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col gap-3">
-          {isExpenseLength && (
-            <h2 className="text-primary text-xl font-semibold">Расход</h2>
-          )}
-          {expenseCategories.map((category: Category) => (
-            <CategoryItem
-              key={category.id}
-              category={category}
-              deleteCategory={deleteCategory}
-            />
-          ))}
-        </div>
-      </div>
+      </RouteGrowContent>
+      <BackButton />
     </RouteWrapper>
   );
 };

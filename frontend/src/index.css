@@ -4,6 +4,6 @@
 @theme {
   --font-inter: 'Inter Tight', sans-serif;
   --color-background: #27272a; /* bg-zinc-800 */
-  --color-primary: rgb(234, 216, 189);
+  --color-primary: #ead8bd;
   --color-secondary: #c599ff;
 }
