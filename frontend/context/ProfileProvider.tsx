@@ -4,12 +4,18 @@ import { ApiAvatarResponse, ApiResponse, ProviderProps } from '../types';
 import { AxiosResponse } from 'axios';
 import useAuth from '../hooks/useAuth';
 import handleProviderError from '../utils/handleProviderError';
+import { useState } from 'react';
 
 const ProfileProvider = ({ children }: ProviderProps) => {
   const { user, updateUser } = useAuth();
 
+  const [isChangingUsername, setIsChangingUsername] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+
   const changeUsername = async (username: string) => {
     try {
+      setIsChangingUsername(true);
       const res: AxiosResponse<ApiResponse> = await api.post(
         '/change-username',
         {
@@ -21,6 +27,8 @@ const ProfileProvider = ({ children }: ProviderProps) => {
       return res.data;
     } catch (error) {
       return handleProviderError(error);
+    } finally {
+      setIsChangingUsername(false);
     }
   };
 
@@ -29,6 +37,7 @@ const ProfileProvider = ({ children }: ProviderProps) => {
     newPassword: string
   ) => {
     try {
+      setIsChangingPassword(true);
       const res: AxiosResponse<ApiResponse> = await api.post(
         '/change-password',
         {
@@ -41,11 +50,14 @@ const ProfileProvider = ({ children }: ProviderProps) => {
       return res.data;
     } catch (error) {
       return handleProviderError(error);
+    } finally {
+      setIsChangingPassword(false);
     }
   };
 
   const uploadAvatar = async (file: File) => {
     try {
+      setIsUploadingAvatar(true);
       const formData = new FormData();
       formData.append('file', file);
 
@@ -66,6 +78,8 @@ const ProfileProvider = ({ children }: ProviderProps) => {
       return res.data;
     } catch (error) {
       return handleProviderError(error);
+    } finally {
+      setIsUploadingAvatar(false);
     }
   };
 
@@ -75,6 +89,9 @@ const ProfileProvider = ({ children }: ProviderProps) => {
         changeUsername,
         changePassword,
         uploadAvatar,
+        isChangingUsername,
+        isChangingPassword,
+        isUploadingAvatar,
       }}
     >
       {children}

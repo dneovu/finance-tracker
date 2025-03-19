@@ -21,6 +21,8 @@ interface ReminderContextType {
     id: Reminder['id'],
     isShared: boolean
   ) => Promise<ApiResponse>;
+  isAddingReminder: boolean;
+  isAddingSharedReminder: boolean;
 }
 
 const reminderContextReject = async () =>
@@ -34,6 +36,8 @@ const defaultCategoryContext: ReminderContextType = {
   addReminder: reminderContextReject,
   addSharedReminder: reminderContextReject,
   deactivateReminder: reminderContextReject,
+  isAddingReminder: false,
+  isAddingSharedReminder: false,
 };
 
 const ReminderContext = createContext<ReminderContextType>(

@@ -4,11 +4,11 @@ import DropdownForm from './DropdownForm';
 import getMinDateTime from '../../utils/getMinDateTime';
 
 const AddReminderForm = () => {
-  const { addReminder } = useReminders();
+  const { addReminder, isAddingReminder } = useReminders();
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('1');
   const [dueDateTime, setDueDateTime] = useState(getMinDateTime());
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,15 +28,16 @@ const AddReminderForm = () => {
   return (
     <DropdownForm
       isOpen={isOpen}
-      setIsOpen={() => setIsOpen((prev) => !prev)}
+      setIsOpen={setIsOpen}
       handleSubmitForm={handleSubmit}
+      isButtonLoading={isAddingReminder}
       title="Создать напоминание"
       buttonText="Создать"
     >
       <div className="flex flex-col">
         <label htmlFor="add-reminder">Название</label>
         <input
-          className="border-primary border-2 px-2 py-1 focus:outline-none"
+          className="border-primary rounded-sm border-2 px-2 py-1 focus:outline-none"
           type="text"
           name="add-reminder"
           id="add-reminder"
@@ -50,7 +51,7 @@ const AddReminderForm = () => {
       <div className="flex flex-col">
         <label htmlFor="amount">Сумма</label>
         <input
-          className="border-primary border-2 px-2 py-1 focus:outline-none"
+          className="border-primary rounded-sm border-2 px-2 py-1 focus:outline-none"
           type="number"
           inputMode="numeric"
           name="amount"
@@ -67,7 +68,7 @@ const AddReminderForm = () => {
         <label>Дата и время</label>
         <input
           type="datetime-local"
-          className="border-primary border-2 px-2 py-1 focus:outline-none"
+          className="border-primary rounded-sm border-2 px-2 py-1 focus:outline-none"
           min={getMinDateTime()}
           value={dueDateTime}
           required

@@ -15,6 +15,7 @@ const CateroryProvider = ({ children }: ProviderProps) => {
   const { isUserAuthenticated } = useAuth();
   const [categories, setCategories] = useState<Categories>({});
   const [areCategoriesLoading, setAreCategoriesLoading] = useState(true);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -38,6 +39,7 @@ const CateroryProvider = ({ children }: ProviderProps) => {
 
   const addCategory = async (name: string, type: boolean) => {
     try {
+      setIsAddingCategory(true);
       const res: AxiosResponse<CategoriesResponse> = await api.post(
         '/add-category',
         {
@@ -56,6 +58,8 @@ const CateroryProvider = ({ children }: ProviderProps) => {
       return res.data;
     } catch (error) {
       return handleProviderError(error);
+    } finally {
+      setIsAddingCategory(false);
     }
   };
 
@@ -82,7 +86,7 @@ const CateroryProvider = ({ children }: ProviderProps) => {
 
   return (
     <CategoryContext.Provider
-      value={{ categories, areCategoriesLoading, addCategory, deleteCategory }}
+      value={{ categories, areCategoriesLoading, addCategory, deleteCategory, isAddingCategory }}
     >
       {children}
     </CategoryContext.Provider>

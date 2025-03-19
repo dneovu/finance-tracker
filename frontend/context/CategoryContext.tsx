@@ -5,6 +5,7 @@ interface CategoryContextType {
   categories: Categories;
   areCategoriesLoading: boolean;
   addCategory: (name: string, type: boolean) => Promise<AddCategoryResponse>;
+  isAddingCategory: boolean;
   deleteCategory: (id: number) => Promise<ApiResponse>;
 }
 
@@ -14,6 +15,7 @@ const categoryContextReject = async () =>
 const defaultCategoryContext: CategoryContextType = {
   categories: [],
   areCategoriesLoading: false,
+  isAddingCategory: false,
   addCategory: categoryContextReject,
   deleteCategory: categoryContextReject,
 };

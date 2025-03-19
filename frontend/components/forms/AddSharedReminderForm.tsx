@@ -7,7 +7,7 @@ import getMinDateTime from '../../utils/getMinDateTime';
 
 const AddSharedReminderForm = () => {
   const { friendsData } = useFriends();
-  const { addSharedReminder } = useReminders();
+  const { addSharedReminder, isAddingSharedReminder } = useReminders();
   const [name, setName] = useState('');
   const [selectedFriends, setSelectedFriends] = useState<
     Record<number, number>
@@ -62,8 +62,9 @@ const AddSharedReminderForm = () => {
   return (
     <DropdownForm
       isOpen={isOpen}
-      setIsOpen={() => setIsOpen((prev) => !prev)}
+      setIsOpen={setIsOpen}
       handleSubmitForm={handleSubmit}
+      isButtonLoading={isAddingSharedReminder}
       title="Добавить общее напоминание"
       buttonText="Создать"
     >
@@ -75,7 +76,7 @@ const AddSharedReminderForm = () => {
           required
           minLength={1}
           maxLength={20}
-          className="border-primary border-2 px-2 py-1 focus:outline-none"
+          className="border-primary rounded-sm border-2 px-2 py-1 focus:outline-none"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
@@ -86,7 +87,7 @@ const AddSharedReminderForm = () => {
         <input
           id="reminder-date"
           type="datetime-local"
-          className="border-primary border-2 px-2 py-1 focus:outline-none"
+          className="border-primary rounded-sm border-2 px-2 py-1 focus:outline-none"
           value={dueDate}
           required
           onChange={(e) => setDueDate(e.target.value)}
@@ -115,7 +116,7 @@ const AddSharedReminderForm = () => {
                     type="number"
                     min="1"
                     placeholder="Сумма"
-                    className="border-primary w-24 border-2 px-2 py-1 focus:outline-none"
+                    className="border-primary w-24 rounded-sm border-2 px-2 py-1 focus:outline-none"
                     value={selectedFriends[friend.id]}
                     onChange={(e) =>
                       handleAmountChange(friend.id, Number(e.target.value))

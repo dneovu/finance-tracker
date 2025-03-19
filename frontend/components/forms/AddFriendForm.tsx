@@ -1,11 +1,12 @@
 import { FormEvent, useState } from 'react';
 import useFriends from '../../hooks/useFriends';
 import DropdownForm from './DropdownForm';
+import InputWithValidation from '../common/InputWithValidation';
 
 const AddFriendForm = () => {
-  const { sendFriendRequest } = useFriends();
+  const { sendFriendRequest, isSendingRequest } = useFriends();
   const [friendSearch, setFriendSearch] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const searchHandler = async (e: FormEvent) => {
     e.preventDefault();
@@ -15,26 +16,21 @@ const AddFriendForm = () => {
   return (
     <DropdownForm
       isOpen={isOpen}
-      setIsOpen={() => setIsOpen((prev) => !prev)}
+      setIsOpen={setIsOpen}
       handleSubmitForm={searchHandler}
       title="Добавить друга"
       buttonText="Добавить"
+      isButtonLoading={isSendingRequest}
     >
-      <div className="flex flex-col">
-        <label htmlFor="friend-search">Логин пользователя</label>
-        <input
-          className={`border-2 px-2 py-1 focus:outline-none ${
-            friendSearch.length >= 6 ? 'border-secondary' : 'border-primary'
-          }`}
-          type="text"
-          name="friend-search"
-          id="friend-search"
-          required
-          minLength={6}
-          value={friendSearch}
-          onChange={(e) => setFriendSearch(e.target.value)}
-        />
-      </div>
+      <InputWithValidation
+        labelName="Логин пользователя"
+        id="friend-search"
+        type="text"
+        value={friendSearch}
+        setValue={setFriendSearch}
+        minLength={6}
+        isValid={() => friendSearch.length >= 6}
+      />
     </DropdownForm>
   );
 };

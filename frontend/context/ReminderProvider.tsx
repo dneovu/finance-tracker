@@ -20,6 +20,9 @@ const ReminderProvider = ({ children }: ProviderProps) => {
     sharedReminders: [],
   });
 
+  const [isAddingReminder, setIsAddingReminder] = useState(false);
+  const [isAddingSharedReminder, setIsAddingSharedReminder] = useState(false);
+
   useEffect(() => {
     const fetchReminders = async () => {
       try {
@@ -47,6 +50,7 @@ const ReminderProvider = ({ children }: ProviderProps) => {
     dueDate: Date
   ) => {
     try {
+      setIsAddingReminder(true);
       // без сдвига в UTC
       const localDateTime = new Date(
         dueDate.getFullYear(),
@@ -77,6 +81,8 @@ const ReminderProvider = ({ children }: ProviderProps) => {
       return res.data;
     } catch (error) {
       return handleProviderError(error);
+    } finally {
+      setIsAddingReminder(false);
     }
   };
 
@@ -88,6 +94,7 @@ const ReminderProvider = ({ children }: ProviderProps) => {
     }
   ) => {
     try {
+      setIsAddingSharedReminder(true);
       // без сдвига в UTC
       const localDateTime = new Date(
         dueDate.getFullYear(),
@@ -118,6 +125,8 @@ const ReminderProvider = ({ children }: ProviderProps) => {
       return res.data;
     } catch (error) {
       return handleProviderError(error);
+    } finally {
+      setIsAddingSharedReminder(false);
     }
   };
 
@@ -152,6 +161,8 @@ const ReminderProvider = ({ children }: ProviderProps) => {
         addReminder,
         addSharedReminder,
         deactivateReminder,
+        isAddingReminder,
+        isAddingSharedReminder,
       }}
     >
       {children}

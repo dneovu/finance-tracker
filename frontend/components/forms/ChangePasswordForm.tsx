@@ -5,7 +5,7 @@ import isAuthInputValid from '../../utils/isAuthInputValid';
 import DropdownForm from './DropdownForm';
 
 const ChangePasswordForm = () => {
-  const { changePassword } = useProfile();
+  const { changePassword, isChangingPassword } = useProfile();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [isOpen, setIsOpen] = useState(false); // отображение формы
@@ -26,8 +26,9 @@ const ChangePasswordForm = () => {
   return (
     <DropdownForm
       isOpen={isOpen}
-      setIsOpen={() => setIsOpen((prev) => !prev)}
+      setIsOpen={setIsOpen}
       handleSubmitForm={handleUpdatePassword}
+      isButtonLoading={isChangingPassword}
       title="Изменить пароль"
       buttonText="Сохранить"
     >

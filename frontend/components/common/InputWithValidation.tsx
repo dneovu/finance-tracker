@@ -1,4 +1,4 @@
-interface AuthInputProps {
+interface InputWithValidationProps {
   labelName: string;
   id: string;
   type: string;
@@ -8,7 +8,7 @@ interface AuthInputProps {
   isValid: (value: string) => boolean;
 }
 
-const AuthInput = ({
+const InputWithValidation = ({
   labelName,
   id,
   type,
@@ -16,13 +16,13 @@ const AuthInput = ({
   minLength,
   setValue,
   isValid,
-}: AuthInputProps) => (
+}: InputWithValidationProps) => (
   <div className="flex flex-col">
     <label htmlFor={id} className="text-[1rem]">
       {labelName}
     </label>
     <input
-      className={`border-2 px-2 py-1 focus:outline-none ${
+      className={`border-2 px-2 py-1 rounded-sm focus:outline-none ${
         isValid(value) ? 'border-secondary' : 'border-primary'
       }`}
       type={type}
@@ -38,4 +38,4 @@ const AuthInput = ({
   </div>
 );
 
-export default AuthInput;
+export default InputWithValidation;

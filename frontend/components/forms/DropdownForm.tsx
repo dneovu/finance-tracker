@@ -5,7 +5,8 @@ interface DropdownFormProps {
   children: React.ReactNode;
   title: string;
   buttonText: string;
-  setIsOpen: () => void;
+  isButtonLoading?: boolean;
+  setIsOpen: (isOpen: boolean) => void;
   isOpen: boolean;
   handleSubmitForm: (e: FormEvent) => Promise<void>;
 }
@@ -17,10 +18,14 @@ const DropdownForm = ({
   setIsOpen,
   isOpen,
   handleSubmitForm,
+  isButtonLoading,
 }: DropdownFormProps) => {
   return (
     <div className="text-primary w-full">
-      <div className="flex cursor-pointer items-center" onClick={setIsOpen}>
+      <div
+        className="flex cursor-pointer items-center"
+        onClick={() => setIsOpen(!isOpen)}
+      >
         <h2 className="text-2xl select-none">{title}</h2>
         <span
           className={`mt-1 ml-1 transform text-[0.6rem] transition-transform select-none ${isOpen ? 'rotate-180' : ''}`} // стрелка меняет направление
@@ -34,7 +39,7 @@ const DropdownForm = ({
         onSubmit={handleSubmitForm}
       >
         {children}
-        <SubmitButton text={buttonText} />
+        <SubmitButton text={buttonText} isLoading={isButtonLoading} />
       </form>
     </div>
   );

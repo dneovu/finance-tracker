@@ -8,6 +8,9 @@ interface ProfileContextType {
     newPassword: string
   ) => Promise<ApiResponse>;
   uploadAvatar: (file: File) => Promise<ApiAvatarResponse>;
+  isChangingUsername: boolean;
+  isChangingPassword: boolean;
+  isUploadingAvatar: boolean;
 }
 
 const profileContextReject = async () =>
@@ -17,6 +20,9 @@ const defaultProfileContext: ProfileContextType = {
   changeUsername: profileContextReject,
   changePassword: profileContextReject,
   uploadAvatar: profileContextReject,
+  isChangingUsername: false,
+  isChangingPassword: false,
+  isUploadingAvatar: false,
 };
 
 const ProfileContext = createContext<ProfileContextType>(defaultProfileContext);

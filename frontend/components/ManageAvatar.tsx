@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import useProfile from '../hooks/useProfile';
 import useAuth from '../hooks/useAuth';
 import SubmitButton from './common/SubmitButton';
 
 const ManageAvatar = () => {
   const { user } = useAuth();
-  const { uploadAvatar } = useProfile();
+  const { uploadAvatar, isUploadingAvatar } = useProfile();
   const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -16,8 +17,11 @@ const ManageAvatar = () => {
 
   const handleUploadButton = async () => {
     if (file) {
-      const res = await uploadAvatar(file);
-      console.log(res);
+      await uploadAvatar(file);
+      setFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -31,10 +35,15 @@ const ManageAvatar = () => {
         accept="image/png, image/jpg, image/jpeg"
         name="avatarInput"
         id="avatarInput"
+        ref={fileInputRef}
         className="hover:file:bg-primary file:bg-secondary w-fit text-stone-500 transition-all file:mr-5 file:border-[1px] file:px-3 file:py-1 file:text-stone-700 file:transition-all hover:cursor-pointer hover:file:cursor-pointer"
         onChange={handleInputFile}
       />
-      <SubmitButton text="Загрузить" onClick={handleUploadButton} />
+      <SubmitButton
+        text="Загрузить"
+        onClick={handleUploadButton}
+        isLoading={isUploadingAvatar}
+      />
     </div>
   );
 };

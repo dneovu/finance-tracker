@@ -20,6 +20,7 @@ const FriendProvider = ({ children }: ProviderProps) => {
     outgoingRequests: [],
     incomingRequests: [],
   });
+  const [isSendingRequest, setIsSendingRequest] = useState(false);
 
   useEffect(() => {
     const fetchFriends = async () => {
@@ -47,6 +48,7 @@ const FriendProvider = ({ children }: ProviderProps) => {
 
   const sendFriendRequest = async (username: Friend['username']) => {
     try {
+      setIsSendingRequest(true);
       const res: AxiosResponse<FriendRequestResponse> = await api.post(
         '/friends/send-request',
         {
@@ -63,6 +65,8 @@ const FriendProvider = ({ children }: ProviderProps) => {
       return res.data;
     } catch (error) {
       return handleProviderError(error);
+    } finally {
+      setIsSendingRequest(false);
     }
   };
 
@@ -159,6 +163,7 @@ const FriendProvider = ({ children }: ProviderProps) => {
       value={{
         friendsData,
         sendFriendRequest,
+        isSendingRequest,
         acceptFriendRequest,
         deleteFriend,
         cancelFriendRequest,
