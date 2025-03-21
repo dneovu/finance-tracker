@@ -3,6 +3,7 @@ import useReminders from '../../hooks/useReminders';
 import DropdownForm from './DropdownForm';
 import getMinDateTime from '../../utils/getMinDateTime';
 import DateTimeInput from '../common/DateTimeInput';
+import AmountInput from '../common/AmountInput';
 
 const AddReminderForm = () => {
   const { addReminder, isAddingReminder } = useReminders();
@@ -49,22 +50,7 @@ const AddReminderForm = () => {
           onChange={(e) => setName(e.target.value)}
         />
       </div>
-      <div className="flex flex-col">
-        <label htmlFor="amount">Сумма</label>
-        <input
-          className="border-primary rounded-sm border-2 px-2 py-1 focus:outline-none"
-          type="number"
-          inputMode="numeric"
-          name="amount"
-          id="amount"
-          min="1"
-          max="1000000"
-          step="any"
-          value={amount}
-          required
-          onChange={(e) => setAmount(e.target.value)}
-        />
-      </div>
+      <AmountInput amount={amount} setAmount={setAmount} />
 
       <DateTimeInput
         id="reminder-date-time"

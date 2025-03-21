@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import useCategories from '../../hooks/useCategories';
 import useTransactions from '../../hooks/useTransactions';
 import { Category } from '../../types';
+import AmountInput from '../common/AmountInput';
 
 const AddTransactionForm = () => {
   const { addTransaction } = useTransactions();
@@ -29,23 +30,7 @@ const AddTransactionForm = () => {
   return (
     <div className="flex w-fit">
       <form className="flex flex-col gap-2" onSubmit={addTransactionHandler}>
-        <div className="flex">
-          <div className="flex flex-col">
-            <label htmlFor="amount">Сумма</label>
-            <input
-              className="border-background rounded border-1 px-2 py-1 focus:outline-none"
-              type="number"
-              inputMode="numeric"
-              name="amount"
-              id="amount"
-              min="1"
-              max="1000000"
-              step="any"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-        </div>
+        <AmountInput amount={amount} setAmount={setAmount} />
         <div className="flex flex-col">
           <label htmlFor="category-select">Категория</label>
           <select

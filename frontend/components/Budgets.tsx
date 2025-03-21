@@ -3,6 +3,7 @@ import useTransactions from '../hooks/useTransactions';
 import { Budget, Category } from '../types';
 import useCategories from '../hooks/useCategories';
 import { format } from 'date-fns';
+import AmountInput from './common/AmountInput';
 
 const Budgets = () => {
   const { categories } = useCategories();
@@ -43,22 +44,7 @@ const Budgets = () => {
   return (
     <div className="flex flex-col gap-2">
       <h2 className="font-bold">Установить новый бюджет</h2>
-      <div className="flex items-center gap-2">
-        <label>Сумма:</label>
-        <input
-          className="rounded border p-1"
-          type="number"
-          inputMode="numeric"
-          name="amount"
-          id="amount"
-          min="1"
-          max="1000000"
-          step="any"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-        <span>₽</span>
-      </div>
+      <AmountInput amount={amount} setAmount={setAmount} />
       <div className="flex items-center gap-2">
         <label>Дата начала:</label>
         <input
