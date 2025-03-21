@@ -2,6 +2,7 @@ import { useState } from 'react';
 import useReminders from '../../hooks/useReminders';
 import DropdownForm from './DropdownForm';
 import getMinDateTime from '../../utils/getMinDateTime';
+import DateTimeInput from '../common/DateTimeInput';
 
 const AddReminderForm = () => {
   const { addReminder, isAddingReminder } = useReminders();
@@ -64,17 +65,14 @@ const AddReminderForm = () => {
           onChange={(e) => setAmount(e.target.value)}
         />
       </div>
-      <div className="flex flex-col">
-        <label>Дата и время</label>
-        <input
-          type="datetime-local"
-          className="border-primary rounded-sm border-2 px-2 py-1 focus:outline-none"
-          min={getMinDateTime()}
-          value={dueDateTime}
-          required
-          onChange={(e) => setDueDateTime(e.target.value)}
-        />
-      </div>
+
+      <DateTimeInput
+        id="reminder-date-time"
+        value={dueDateTime}
+        setValue={setDueDateTime}
+        minDateTime={getMinDateTime()}
+        labelText="Дата и время"
+      />
     </DropdownForm>
   );
 };

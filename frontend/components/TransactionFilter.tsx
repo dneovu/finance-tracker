@@ -1,19 +1,16 @@
 import { useState } from 'react';
 import { toZonedTime, format } from 'date-fns-tz';
 import useTransactions from '../hooks/useTransactions';
+import DateTimeInput from './common/DateTimeInput';
 
 const TransactionFilter = () => {
   const { transactions, deleteTransaction } = useTransactions();
-  const [fromDate, setFromDate] = useState('');
-  const [fromTime, setFromTime] = useState('');
-  const [toDate, setToDate] = useState('');
-  const [toTime, setToTime] = useState('');
+  const [fromDateTime, setFromDateTime] = useState('');
+  const [toDateTime, setToDateTime] = useState('');
 
   const resetHandler = () => {
-    setFromDate('');
-    setFromTime('');
-    setToDate('');
-    setToTime('');
+    setFromDateTime('');
+    setToDateTime('');
   };
 
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -27,24 +24,22 @@ const TransactionFilter = () => {
     );
 
     // преобразуем время фильтра по вводу пользователя в локальное время
-    const fromDateTime =
-      fromDate && fromTime
-        ? new Date(
-            toZonedTime(new Date(`${fromDate}T${fromTime}:00`), userTimeZone) // локальное время
-          )
-        : null;
+    const fromDateTimeZoned = fromDateTime
+      ? new Date(
+          toZonedTime(new Date(fromDateTime), userTimeZone) // локальное время
+        )
+      : null;
 
-    const toDateTime =
-      toDate && toTime
-        ? new Date(
-            toZonedTime(new Date(`${toDate}T${toTime}:00`), userTimeZone) // локальное время
-          )
-        : null;
+    const toDateTimeZoned = toDateTime
+      ? new Date(
+          toZonedTime(new Date(toDateTime), userTimeZone) // локальное время
+        )
+      : null;
 
     // сравниваем с локальным временем
     return (
-      (!fromDateTime || transactionDate >= fromDateTime) &&
-      (!toDateTime || transactionDate <= toDateTime)
+      (!fromDateTimeZoned || transactionDate >= fromDateTimeZoned) &&
+      (!toDateTimeZoned || transactionDate <= toDateTimeZoned)
     );
   });
 
@@ -53,37 +48,19 @@ const TransactionFilter = () => {
       <h2 className="mb-2 text-lg font-bold">Фильтр транзакций</h2>
 
       <div className="mb-4 flex flex-wrap gap-4">
-        <div>
-          <label className="block text-sm font-medium">От:</label>
-          <input
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-            className="rounded border p-1"
-          />
-          <input
-            type="time"
-            value={fromTime}
-            onChange={(e) => setFromTime(e.target.value)}
-            className="ml-2 rounded border p-1"
-          />
-        </div>
+        <DateTimeInput
+          id="from-date-time"
+          value={fromDateTime}
+          setValue={setFromDateTime}
+          labelText="От:"
+        />
 
-        <div>
-          <label className="block text-sm font-medium">До:</label>
-          <input
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-            className="rounded border p-1"
-          />
-          <input
-            type="time"
-            value={toTime}
-            onChange={(e) => setToTime(e.target.value)}
-            className="ml-2 rounded border p-1"
-          />
-        </div>
+        <DateTimeInput
+          id="to-date-time"
+          value={toDateTime}
+          setValue={setToDateTime}
+          labelText="До:"
+        />
       </div>
       <button
         onClick={resetHandler}

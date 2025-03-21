@@ -101,37 +101,43 @@ const Budgets = () => {
       >
         Установить бюджет
       </button>
-      <h2>Ваши бюджеты</h2>
-      {budgets.map((budget) => {
-        const { isExceeded, totalSpent } = checkBudgetExceeded(budget);
-        const overBudget = isExceeded
-          ? `+${totalSpent - budget.amount}`
-          : totalSpent - budget.amount;
-        return (
-          <div className="flex gap-3" key={budget.id}>
-            <p
-              style={{
-                color: isExceeded ? 'red' : 'green',
-              }}
-            >
-              {budget.category_id
-                ? `Категория: ${categories[budget.category_id].name}`
-                : 'Общий бюджет'}{' '}
-              {budget.amount} ₽ ({overBudget})
-            </p>
-            <p>
-              {format(budget.start_date, 'dd-MM-yy')} -{' '}
-              {format(budget.end_date, 'dd-MM-yy')}
-            </p>
-            <button
-              className="cursor-pointer"
-              onClick={() => deleteBudget(budget.id)}
-            >
-              ❌
-            </button>
-          </div>
-        );
-      })}
+      {budgets.length === 0 ? (
+        <p>У вас пока нет бюджетов</p>
+      ) : (
+        <>
+          <h2>Ваши бюджеты</h2>
+          {budgets.map((budget) => {
+            const { isExceeded, totalSpent } = checkBudgetExceeded(budget);
+            const overBudget = isExceeded
+              ? `+${totalSpent - budget.amount}`
+              : totalSpent - budget.amount;
+            return (
+              <div className="flex gap-3" key={budget.id}>
+                <p
+                  style={{
+                    color: isExceeded ? 'red' : 'green',
+                  }}
+                >
+                  {budget.category_id
+                    ? `Категория: ${categories[budget.category_id].name}`
+                    : 'Общий бюджет'}{' '}
+                  {budget.amount} ₽ ({overBudget})
+                </p>
+                <p>
+                  {format(budget.start_date, 'dd-MM-yy')} -{' '}
+                  {format(budget.end_date, 'dd-MM-yy')}
+                </p>
+                <button
+                  className="cursor-pointer"
+                  onClick={() => deleteBudget(budget.id)}
+                >
+                  ❌
+                </button>
+              </div>
+            );
+          })}
+        </>
+      )}
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { Friend } from '../../types';
 import useReminders from '../../hooks/useReminders';
 import DropdownForm from './DropdownForm';
 import getMinDateTime from '../../utils/getMinDateTime';
+import DateTimeInput from '../common/DateTimeInput';
 
 const AddSharedReminderForm = () => {
   const { friendsData } = useFriends();
@@ -14,7 +15,7 @@ const AddSharedReminderForm = () => {
   >({});
   const [isOpen, setIsOpen] = useState(false);
 
-  const [dueDate, setDueDate] = useState(getMinDateTime());
+  const [dueDateTime, setDueDateTime] = useState(getMinDateTime());
 
   // добавление/удаление выбранного друга
   const toggleFriendSelection = (friendId: number) => {
@@ -41,19 +42,19 @@ const AddSharedReminderForm = () => {
 
     console.log({
       name,
-      dueDate,
+      dueDateTime,
       sharedReminders: selectedFriends,
     });
 
     const res = await addSharedReminder(
       name,
-      new Date(dueDate),
+      new Date(dueDateTime),
       selectedFriends
     );
 
     if (res.status === 'success') {
       setName('');
-      setDueDate(getMinDateTime());
+      setDueDateTime(getMinDateTime());
       setSelectedFriends({});
     }
     console.log(res);
@@ -65,8 +66,8 @@ const AddSharedReminderForm = () => {
       setIsOpen={setIsOpen}
       handleSubmitForm={handleSubmit}
       isButtonLoading={isAddingSharedReminder}
-      title="Добавить общее напоминание"
-      buttonText="Создать"
+      title="Создать общее напоминание"
+      buttonText="Отправить"
     >
       <div className="flex flex-col">
         <label htmlFor="reminder-name">Название</label>
@@ -82,18 +83,13 @@ const AddSharedReminderForm = () => {
         />
       </div>
 
-      <div className="flex flex-col">
-        <label htmlFor="reminder-date">Дата и время</label>
-        <input
-          id="reminder-date"
-          type="datetime-local"
-          className="border-primary rounded-sm border-2 px-2 py-1 focus:outline-none"
-          value={dueDate}
-          required
-          onChange={(e) => setDueDate(e.target.value)}
-          min={getMinDateTime()} // блокируем выбор прошлого времени
-        />
-      </div>
+      <DateTimeInput
+        id="shared-reminder-date-time"
+        value={dueDateTime}
+        setValue={setDueDateTime}
+        minDateTime={getMinDateTime()}
+        labelText="Дата и время"
+      />
 
       <div className="flex flex-col gap-2">
         <label>Выберите друзей:</label>
