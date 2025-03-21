@@ -6,7 +6,7 @@ import AuthLayout from '../components/wrappers/AuthLayout';
 import { useNavigate } from 'react-router';
 
 const Register = () => {
-  const { register } = useAuth();
+  const { register, isAuthenticating } = useAuth();
   const navigate = useNavigate();
 
   const [username, setUsername] = useState('');
@@ -60,15 +60,16 @@ const Register = () => {
           isValid={() => arePasswordsMatching(password, confirmPassword)}
         />
         <button
-          className="mt-3 cursor-pointer rounded-md bg-slate-700 py-2 font-bold text-slate-50 transition-all hover:shadow-lg hover:shadow-slate-300 disabled:cursor-default disabled:bg-slate-200 disabled:hover:shadow-none"
+          className="bg-secondary text-background hover:bg-primary mt-3 cursor-pointer rounded-md py-2 font-bold transition-all hover:shadow-sm hover:shadow-slate-300 disabled:cursor-default disabled:bg-slate-300 disabled:text-slate-400 disabled:hover:shadow-none"
           type="submit"
           disabled={
             !isAuthInputValid(username) ||
             !isAuthInputValid(password) ||
-            !arePasswordsMatching(password, confirmPassword)
+            !arePasswordsMatching(password, confirmPassword) ||
+            isAuthenticating
           }
         >
-          Зарегистрироваться
+          {isAuthenticating ? 'Загрузка...' : 'Зарегистрироваться'}
         </button>
       </form>
     </AuthLayout>

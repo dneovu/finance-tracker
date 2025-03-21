@@ -9,6 +9,7 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<AuthResponse>;
   logout: () => Promise<ApiResponse>;
   register: (username: string, password: string) => Promise<ApiResponse>;
+  isAuthenticating: boolean;
 }
 
 const authContextReject = async () =>
@@ -22,6 +23,7 @@ const defaultAuthContext: AuthContextType = {
   login: authContextReject,
   logout: authContextReject,
   register: authContextReject,
+  isAuthenticating: false,
 };
 
 const AuthContext = createContext<AuthContextType>(defaultAuthContext);

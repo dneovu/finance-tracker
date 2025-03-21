@@ -10,6 +10,8 @@ const AuthProvider = ({ children }: ProviderProps) => {
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const [isUserLoading, setIsUserLoading] = useState(true);
 
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+
   useEffect(() => {
     const fetchUser = async () => {
       setIsUserLoading(true);
@@ -36,6 +38,7 @@ const AuthProvider = ({ children }: ProviderProps) => {
 
   const login = async (username: string, password: string) => {
     try {
+      setIsAuthenticating(true);
       const res: AxiosResponse<AuthResponse> = await api.post('/login', {
         username,
         password,
@@ -47,11 +50,14 @@ const AuthProvider = ({ children }: ProviderProps) => {
       return res.data;
     } catch (error) {
       return handleProviderError(error);
+    } finally {
+      setIsAuthenticating(false);
     }
   };
 
   const register = async (username: string, password: string) => {
     try {
+      setIsAuthenticating(true);
       const res: AxiosResponse<ApiResponse> = await api.post('/register', {
         username,
         password,
@@ -60,6 +66,8 @@ const AuthProvider = ({ children }: ProviderProps) => {
       return res.data;
     } catch (error) {
       return handleProviderError(error);
+    } finally {
+      setIsAuthenticating(false);
     }
   };
 
@@ -88,6 +96,7 @@ const AuthProvider = ({ children }: ProviderProps) => {
         login,
         register,
         logout,
+        isAuthenticating,
       }}
     >
       {children}

@@ -3,9 +3,9 @@ interface AuthLayoutProps {
 }
 
 const AuthLayout = ({ children }: AuthLayoutProps) => (
-  <div className={'min-h-screen bg-slate-200'}>
+  <div className={'bg-background text-primary min-h-screen'}>
     <div className="flex min-h-screen flex-col items-center justify-center">
-      <div className="flex flex-col items-center justify-center gap-3 rounded-md border-2 border-red-50 bg-slate-50 p-8">
+      <div className="bg-light-bg flex flex-col items-center justify-center gap-3 rounded-md border-2 border-red-50 p-8">
         {children}
       </div>
     </div>
