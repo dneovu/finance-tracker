@@ -35,7 +35,7 @@ const DropdownForm = ({
       </div>
 
       <form
-        className={`my-3 flex w-fit flex-col gap-3 overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[500px]' : 'max-h-0'}`} // анимация
+        className={`my-3 flex w-fit min-w-[250px] flex-col gap-3 overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[500px]' : 'max-h-0'}`} // анимация
         onSubmit={handleSubmitForm}
       >
         {children}

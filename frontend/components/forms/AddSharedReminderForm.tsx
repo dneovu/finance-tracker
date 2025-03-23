@@ -6,6 +6,7 @@ import DropdownForm from './DropdownForm';
 import getMinDateTime from '../../utils/getMinDateTime';
 import DateTimeInput from '../common/DateTimeInput';
 import notify from '../../utils/notify';
+import AmountInput from '../common/AmountInput';
 
 const AddSharedReminderForm = () => {
   const { friendsData } = useFriends();
@@ -101,29 +102,46 @@ const AddSharedReminderForm = () => {
           <p className="text-gray-500">У вас нет друзей</p>
         ) : (
           friendsData.friends.map((friend: Friend) => (
-            <div key={friend.id} className="flex items-center gap-1">
-              <input
-                type="checkbox"
-                id={`friend-${friend.id}`}
-                checked={friend.id in selectedFriends}
-                onChange={() => toggleFriendSelection(friend.id)}
-              />
-              <label htmlFor={`friend-${friend.id}`}>{friend.username}</label>
+            <div key={friend.id} className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id={`friend-${friend.id}`}
+                  checked={friend.id in selectedFriends}
+                  onChange={() => toggleFriendSelection(friend.id)}
+                  className="peer hidden"
+                />
+                <label
+                  htmlFor={`friend-${friend.id}`}
+                  className="flex cursor-pointer items-center gap-2 select-none"
+                >
+                  <span className="flex h-5 w-5 items-center justify-center rounded-md border-2 border-gray-400 transition-all peer-checked:border-blue-500 peer-checked:bg-blue-500">
+                    {friend.id in selectedFriends && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="white"
+                        className="h-4 w-4"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M20.285 5.285a1 1 0 0 1 0 1.414l-10 10a1 1 0 0 1-1.414 0l-5-5a1 1 0 0 1 1.414-1.414L9 14.586l9.293-9.293a1 1 0 0 1 1.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    )}
+                  </span>
+                  {friend.username}
+                </label>
+              </div>
 
               {friend.id in selectedFriends && (
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    min="1"
-                    placeholder="Сумма"
-                    className="border-primary w-24 rounded-sm border-2 px-2 py-1 focus:outline-none"
-                    value={selectedFriends[friend.id]}
-                    onChange={(e) =>
-                      handleAmountChange(friend.id, Number(e.target.value))
-                    }
-                  />
-                  <span>₽</span>
-                </div>
+                <AmountInput
+                  amount={selectedFriends[friend.id].toString()}
+                  setAmount={(amount) =>
+                    handleAmountChange(friend.id, Number(amount))
+                  }
+                />
               )}
             </div>
           ))
