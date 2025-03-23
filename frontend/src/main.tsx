@@ -7,6 +7,7 @@ import CateroryProvider from '../context/CategoryProvider.js';
 import TransactionProvider from '../context/TransactionProvider.js';
 import FriendProvider from '../context/FriendProvider.js';
 import ReminderProvider from '../context/ReminderProvider.js';
+import { ToastContainer } from 'react-toastify';
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <AuthProvider>
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
             <TransactionProvider>
               <BrowserRouter>
                 <App />
+                <ToastContainer />
               </BrowserRouter>
             </TransactionProvider>
           </CateroryProvider>

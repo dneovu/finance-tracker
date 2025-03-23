@@ -4,6 +4,7 @@ import useAuth from '../hooks/useAuth';
 import InputWithValidation from '../components/common/InputWithValidation';
 import AuthLayout from '../components/wrappers/AuthLayout';
 import { useNavigate } from 'react-router';
+import notify from '../utils/notify';
 
 const Register = () => {
   const { register, isAuthenticating } = useAuth();
@@ -26,8 +27,10 @@ const Register = () => {
       setUsername('');
       setPassword('');
       setConfirmPassword('');
+      notify.error(res.message);
     } else {
       navigate('/login');
+      notify.success(res.message);
     }
   };
 

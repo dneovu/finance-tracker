@@ -3,6 +3,7 @@ import useProfile from '../../hooks/useProfile';
 import InputWithValidation from '../common/InputWithValidation';
 import isAuthInputValid from '../../utils/isAuthInputValid';
 import DropdownForm from './DropdownForm';
+import notify from '../../utils/notify';
 
 const ChangePasswordForm = () => {
   const { changePassword, isChangingPassword } = useProfile();
@@ -18,9 +19,10 @@ const ChangePasswordForm = () => {
     if (res.status === 'error') {
       setCurrentPassword('');
       setNewPassword('');
+      notify.error(res.message);
+    } else {
+      notify.success(res.message);
     }
-
-    alert(res.message);
   };
 
   return (

@@ -3,6 +3,7 @@ import useProfile from '../../hooks/useProfile';
 import InputWithValidation from '../common/InputWithValidation';
 import isAuthInputValid from '../../utils/isAuthInputValid';
 import DropdownForm from './DropdownForm';
+import notify from '../../utils/notify';
 
 const ChangeUsernameForm = () => {
   const { changeUsername, isChangingUsername } = useProfile();
@@ -16,9 +17,10 @@ const ChangeUsernameForm = () => {
 
     if (res.status === 'error') {
       setNewUsername('');
+      notify.error(res.message);
+    } else {
+      notify.success(res.message);
     }
-
-    alert(res.message);
   };
 
   return (

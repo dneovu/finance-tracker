@@ -4,6 +4,7 @@ import InputWithValidation from '../components/common/InputWithValidation';
 import useAuth from '../hooks/useAuth';
 import AuthLayout from '../components/wrappers/AuthLayout';
 import { useNavigate } from 'react-router';
+import notify from '../utils/notify';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ const Login = () => {
     if (res.status === 'error') {
       setUsername('');
       setPassword('');
+      notify.error(res.message);
     } else {
       navigate('/');
     }

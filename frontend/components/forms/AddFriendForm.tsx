@@ -2,6 +2,7 @@ import { FormEvent, useState } from 'react';
 import useFriends from '../../hooks/useFriends';
 import DropdownForm from './DropdownForm';
 import InputWithValidation from '../common/InputWithValidation';
+import notify from '../../utils/notify';
 
 const AddFriendForm = () => {
   const { sendFriendRequest, isSendingRequest } = useFriends();
@@ -10,7 +11,13 @@ const AddFriendForm = () => {
 
   const searchHandler = async (e: FormEvent) => {
     e.preventDefault();
-    await sendFriendRequest(friendSearch);
+    const res = await sendFriendRequest(friendSearch);
+
+    if (res.status === 'error') {
+      notify.error(res.message);
+    } else {
+      setFriendSearch('');
+    }
   };
 
   return (

@@ -5,6 +5,7 @@ import useReminders from '../../hooks/useReminders';
 import DropdownForm from './DropdownForm';
 import getMinDateTime from '../../utils/getMinDateTime';
 import DateTimeInput from '../common/DateTimeInput';
+import notify from '../../utils/notify';
 
 const AddSharedReminderForm = () => {
   const { friendsData } = useFriends();
@@ -56,6 +57,9 @@ const AddSharedReminderForm = () => {
       setName('');
       setDueDateTime(getMinDateTime());
       setSelectedFriends({});
+      notify.success(res.message);
+    } else {
+      notify.error(res.message);
     }
     console.log(res);
   };

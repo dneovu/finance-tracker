@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import useProfile from '../hooks/useProfile';
 import useAuth from '../hooks/useAuth';
 import SubmitButton from './common/SubmitButton';
+import notify from '../utils/notify';
 
 const ManageAvatar = () => {
   const { user } = useAuth();
@@ -17,10 +18,15 @@ const ManageAvatar = () => {
 
   const handleUploadButton = async () => {
     if (file) {
-      await uploadAvatar(file);
-      setFile(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+      const res = await uploadAvatar(file);
+      if (res.status === 'error') {
+        notify.error(res.message);
+      } else {
+        notify.success(res.message);
+        setFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
       }
     }
   };
