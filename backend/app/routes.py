@@ -16,6 +16,7 @@ from app.utils import (
 from app.user import User
 from app.cloudinary import cloudinary_upload_avatar
 from datetime import datetime
+import psycopg
 
 
 @app.errorhandler(400)
@@ -78,7 +79,9 @@ def register():
         return jsonify({"status": "error", "message": str(e)}), 500
     else:
         return (
-            jsonify({"status": "success", "message": f"User {username} created"}),
+            jsonify(
+                {"status": "success", "message": f"Пользователь {username} создан"}
+            ),
             200,
         )
     finally:
@@ -119,7 +122,7 @@ def login():
             jsonify(
                 {
                     "status": "success",
-                    "message": "User logged in",
+                    "message": "Пользователь залогинен",
                     "user": {"username": res[1], "logo": res[3]},
                 }
             ),
@@ -143,7 +146,7 @@ def check():
             jsonify(
                 {
                     "status": "success",
-                    "message": "User is logged in",
+                    "message": "Пользователь залогинен",
                     "user": {
                         "username": current_user.username,
                         "logo": current_user.logo,
@@ -161,7 +164,7 @@ def logout():
     if not current_user.is_authenticated:
         return error_response("USER_NOT_LOGGED_IN", 401)
     logout_user()
-    return jsonify({"status": "success", "message": "User logged out"}), 200
+    return jsonify({"status": "success", "message": "Пользователь вышел"}), 200
 
 
 @app.route("/change-username", methods=["POST"])
@@ -196,7 +199,7 @@ def update_profile():
                 jsonify(
                     {
                         "status": "success",
-                        "message": "Username updated. Please log in again.",
+                        "message": "Имя пользователя обновлено",
                     }
                 ),
                 200,
@@ -245,7 +248,7 @@ def change_password():
         con.commit()
         logout_user()  # удаляем сессию
 
-        return jsonify({"status": "success", "message": "Password changed"}), 200
+        return jsonify({"status": "success", "message": "Пароль изменен"}), 200
 
     except Exception as e:
         app.logger.error(f"Error: {e}")
@@ -289,7 +292,11 @@ def upload_avatar():
 
         return (
             jsonify(
-                {"status": "success", "message": "Avatar uploaded", "url": secure_url}
+                {
+                    "status": "success",
+                    "message": "Новый аватар загружен",
+                    "url": secure_url,
+                }
             ),
             200,
         )
@@ -321,7 +328,7 @@ def get_categories():
                 jsonify(
                     {
                         "status": "success",
-                        "message": "No categories",
+                        "message": "Категорий нет",
                         "categories": {},
                     }
                 ),
@@ -333,7 +340,7 @@ def get_categories():
             jsonify(
                 {
                     "status": "success",
-                    "message": "User has categories",
+                    "message": "У пользователя есть категории",
                     "categories": categories,
                 }
             ),
@@ -373,7 +380,7 @@ def add_category():
             jsonify(
                 {
                     "status": "success",
-                    "message": "Category added",
+                    "message": "Категория добавлена",
                     "categories": category,
                 }
             ),
@@ -404,7 +411,19 @@ def delete_category():
             (category_id, current_user.id),
         )
         con.commit()
-        return jsonify({"status": "success", "message": "Category deleted"}), 200
+        return jsonify({"status": "success", "message": "Категория удалена"}), 200
+
+    except psycopg.errors.ForeignKeyViolation:
+        con.rollback()  # Откатываем транзакцию
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "Невозможно удалить категорию, она используется в транзакциях",
+                }
+            ),
+            400,
+        )
     except Exception as e:
         app.logger.error(f"Error: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -445,7 +464,7 @@ def get_transactions():
                 jsonify(
                     {
                         "status": "success",
-                        "message": "No transactions",
+                        "message": "Транзакций нет",
                         "transactions": {},
                     }
                 ),
@@ -456,7 +475,7 @@ def get_transactions():
             jsonify(
                 {
                     "status": "success",
-                    "message": "User has transactions",
+                    "message": "У пользователя есть транзакции",
                     "transactions": transactions,
                 }
             ),
@@ -484,7 +503,7 @@ def add_transaction():
 
     if not amount or amount > 1000000 or not date or not category_id:
         return (
-            jsonify({"status": "error", "message": "Missing required fields"}),
+            jsonify({"status": "error", "message": "Пропущены обязательные поля"}),
             400,
         )
 
@@ -503,12 +522,7 @@ def add_transaction():
         ).fetchone()
 
         if not category_res:
-            return (
-                jsonify(
-                    {"status": "Error", "message": "Error while adding transaction"}
-                ),
-                400,
-            )
+            return error_response("ADD_TRANSACTION_ERROR", 400)
         category_name, category_type = category_res
 
         res = cur.execute(
@@ -522,17 +536,12 @@ def add_transaction():
         con.commit()
 
         if not res:
-            return (
-                jsonify(
-                    {"status": "Error", "message": "Error while adding transaction"}
-                ),
-                400,
-            )
+            return error_response("ADD_TRANSACTION_ERROR", 400)
         return (
             jsonify(
                 {
                     "status": "success",
-                    "message": "Transaction added",
+                    "message": "Транзакция создана",
                     "transactions": {
                         res[0]: {
                             "id": res[0],
@@ -582,14 +591,14 @@ def delete_transaction():
         ).fetchone()[0]
 
         if int(category_user_id) != int(current_user.id):
-            return jsonify({"status": "error", "message": "Unauthorized"}), 401
+            return error_response("USER_NOT_LOGGED_IN", 401)
 
         cur.execute(
             'DELETE FROM "transaction" WHERE "id" = %s',
             (transaction_id,),
         )
         con.commit()
-        return jsonify({"status": "success", "message": "Transaction deleted"}), 200
+        return jsonify({"status": "success", "message": "Транзакция удалена"}), 200
     except Exception as e:
         app.logger.error(f"Error: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -655,7 +664,10 @@ def add_budget():
     category_id = request_data.get("category_id")  # может быть null
 
     if not amount or not start_date or not end_date:
-        return jsonify({"status": "error", "message": "Missing required fields"}), 400
+        return (
+            jsonify({"status": "error", "message": "Пропущены обязательные поля"}),
+            400,
+        )
 
     try:
         con, cur = db_connect()
@@ -668,7 +680,10 @@ def add_budget():
             ).fetchone()
 
             if not category_check:
-                return jsonify({"status": "error", "message": "Invalid category"}), 400
+                return (
+                    jsonify({"status": "error", "message": "Неверная категория"}),
+                    400,
+                )
 
         res = cur.execute(
             """
@@ -728,11 +743,11 @@ def delete_budget():
         ).fetchone()
 
         if not user_has_budget:
-            return jsonify({"status": "error", "message": "Unauthorized"}), 401
+            return error_response("USER_NOT_LOGGED_IN", 401)
 
         cur.execute('DELETE FROM "budget" WHERE "id" = %s', (budget_id,))
         con.commit()
-        return jsonify({"status": "success", "message": "Budget deleted"}), 200
+        return jsonify({"status": "success", "message": "Бюджет удален"}), 200
     except Exception as e:
         app.logger.error(f"Error: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -786,7 +801,7 @@ def get_friends():
             jsonify(
                 {
                     "status": "success",
-                    "message": "User has friends",
+                    "message": "У пользователя есть друзья",
                     "friends": formatted_friends,
                     "outgoing_requests": formatted_outgoing_requests,
                     "incoming_requests": formatted_incoming_requests,
@@ -833,12 +848,12 @@ def add_friend():
         if res:
             if res[0] == 1:
                 return (
-                    jsonify({"status": "error", "message": "Friend already added"}),
+                    jsonify({"status": "error", "message": "Друг уже добавлен"}),
                     400,
                 )
             if res[0] == 0:
                 return (
-                    jsonify({"status": "error", "message": "Request already sent"}),
+                    jsonify({"status": "error", "message": "Заявка уже отправлена"}),
                     400,
                 )
         # отпрвка заявки (статус 0)
@@ -860,7 +875,7 @@ def add_friend():
             jsonify(
                 {
                     "status": "success",
-                    "message": "Friend request sent",
+                    "message": "Заявка в друзья отправлена",
                     "friend": friend,
                 }
             ),
@@ -904,7 +919,7 @@ def accept_friend_request():
         ).fetchone()
         if not friend_data:
             return (
-                jsonify({"status": "error", "message": "Friend not found"}),
+                jsonify({"status": "error", "message": "Друг не найден"}),
                 404,
             )
         # если друг найден, формируем json
@@ -920,7 +935,7 @@ def accept_friend_request():
             jsonify(
                 {
                     "status": "success",
-                    "message": "Friend request accepted",
+                    "message": "Заявка в друзья принята",
                     "friend": friend,
                 }
             ),
@@ -952,7 +967,7 @@ def delete_friend():
             (current_user.id, friend_id, friend_id, current_user.id),
         )
         con.commit()
-        return jsonify({"status": "success", "message": "Friend deleted"}), 200
+        return jsonify({"status": "success", "message": "Друг удален"}), 200
     except Exception as e:
         app.logger.error(f"Error: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -978,7 +993,10 @@ def cancel_friend_request():
             (current_user.id, friend_id),
         )
         con.commit()
-        return jsonify({"status": "success", "message": "Friend request canceled"}), 200
+        return (
+            jsonify({"status": "success", "message": "Заявка в друзья отменена"}),
+            200,
+        )
     except Exception as e:
         app.logger.error(f"Error: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -1004,7 +1022,10 @@ def decline_friend_request():
             (friend_id, current_user.id),
         )
         con.commit()
-        return jsonify({"status": "success", "message": "Friend request declined"}), 200
+        return (
+            jsonify({"status": "success", "message": "Заявка в друзья отклонена"}),
+            200,
+        )
     except Exception as e:
         app.logger.error(f"Error: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -1055,7 +1076,7 @@ def get_reminders():
             jsonify(
                 {
                     "status": "success",
-                    "message": "User reminders retrieved successfully",
+                    "message": "У пользователя есть напоминания",
                     "reminders": personal_reminders,
                     "shared_reminders": shared_reminders,
                 }
@@ -1086,7 +1107,7 @@ def add_reminder():
         due_date_str = data.get("dueDate")
 
         if not all([amount, name, due_date_str]):
-            return jsonify({"status": "error", "message": "Invalid data"}), 500
+            return jsonify({"status": "error", "message": "Неверные данные"}), 500
 
         # преобразуем строку в datetime (без учета часового пояса)
         due_date = datetime.strptime(due_date_str, "%Y-%m-%dT%H:%M:%S")
@@ -1118,7 +1139,7 @@ def add_reminder():
             jsonify(
                 {
                     "status": "success",
-                    "message": "Reminder added",
+                    "message": "Напоминание добавлено",
                     "reminder": reminder_response,
                 }
             ),
@@ -1146,7 +1167,7 @@ def add_shared_reminder():
     shared_reminders = data.get("sharedReminders")
 
     if not name or not due_date or not shared_reminders:
-        return jsonify({"status": "error", "message": "Invalid data"}), 400
+        return jsonify({"status": "error", "message": "Неверные данные"}), 400
 
     try:
         con, cur = db_connect()
@@ -1199,7 +1220,7 @@ def add_shared_reminder():
 
         if not created_reminders:
             return (
-                jsonify({"status": "success", "message": "No reminders were added"}),
+                jsonify({"status": "success", "message": "Напоминания не созданы"}),
                 200,
             )
 
@@ -1207,7 +1228,7 @@ def add_shared_reminder():
             jsonify(
                 {
                     "status": "success",
-                    "message": "Shared reminders created",
+                    "message": "Общее напоминание отправлено",
                     "reminders": created_reminders,
                 }
             ),
@@ -1239,7 +1260,7 @@ def deactivate_reminder():
             (reminder_id, current_user.id),
         )
         con.commit()
-        return jsonify({"status": "success", "message": "Reminder deactivated"}), 200
+        return jsonify({"status": "success", "message": "Напоминание удалено"}), 200
     except Exception as e:
         app.logger.error(f"Error in deactivate_reminder: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
