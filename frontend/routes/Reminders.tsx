@@ -30,22 +30,27 @@ const Reminders = () => {
             </h2>
           )}
 
-          {remindersData.sharedReminders.map((reminder: Reminder) => {
-            const localDate = format(
-              new Date(reminder.dueDate + 'Z'),
-              'dd-MM-yy HH:mm'
-            );
+          {remindersData.sharedReminders
+            .sort(
+              (a, b) =>
+                new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+            )
+            .map((reminder: Reminder) => {
+              const localDate = format(
+                new Date(reminder.dueDate + 'Z'),
+                'dd-MM-yy HH:mm'
+              );
 
-            return (
-              <ReminderItem
-                key={reminder.id}
-                reminder={reminder}
-                deactivateReminder={deactivateReminder}
-                isShared={true}
-                localDate={localDate}
-              />
-            );
-          })}
+              return (
+                <ReminderItem
+                  key={reminder.id}
+                  reminder={reminder}
+                  deactivateReminder={deactivateReminder}
+                  isShared={true}
+                  localDate={localDate}
+                />
+              );
+            })}
         </div>
 
         <div className="flex flex-col gap-3">
@@ -53,22 +58,27 @@ const Reminders = () => {
             <h2 className="text-primary text-xl font-semibold">Напоминания</h2>
           )}
 
-          {remindersData.reminders.map((reminder: Reminder) => {
-            const localDate = format(
-              new Date(reminder.dueDate),
-              'dd-MM-yy HH:mm'
-            );
+          {remindersData.reminders
+            .sort(
+              (a, b) =>
+                new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+            )
+            .map((reminder: Reminder) => {
+              const localDate = format(
+                new Date(reminder.dueDate),
+                'dd-MM-yy HH:mm'
+              );
 
-            return (
-              <ReminderItem
-                key={reminder.id}
-                reminder={reminder}
-                deactivateReminder={deactivateReminder}
-                isShared={false}
-                localDate={localDate}
-              />
-            );
-          })}
+              return (
+                <ReminderItem
+                  key={reminder.id}
+                  reminder={reminder}
+                  deactivateReminder={deactivateReminder}
+                  isShared={false}
+                  localDate={localDate}
+                />
+              );
+            })}
         </div>
       </RouteGrowContent>
       <BackButton />
