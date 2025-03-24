@@ -14,6 +14,7 @@ import handleProviderError from '../utils/handleProviderError';
 const CateroryProvider = ({ children }: ProviderProps) => {
   const { isUserAuthenticated } = useAuth();
   const [categories, setCategories] = useState<Categories>({});
+  // состояния загрузки
   const [areCategoriesLoading, setAreCategoriesLoading] = useState(true);
   const [isAddingCategory, setIsAddingCategory] = useState(false);
 

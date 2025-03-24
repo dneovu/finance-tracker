@@ -8,8 +8,8 @@ import handleProviderError from '../utils/handleProviderError';
 const AuthProvider = ({ children }: ProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
+  // состояния загрузки
   const [isUserLoading, setIsUserLoading] = useState(true);
-
   const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   useEffect(() => {

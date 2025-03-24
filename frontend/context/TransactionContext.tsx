@@ -11,6 +11,7 @@ import {
 interface TransactionContextType {
   transactions: Transactions;
   areTransactionsLoading: boolean;
+  areBudgetsLoading: boolean;
   addTransaction: (
     amount: number,
     date: Date,
@@ -37,6 +38,7 @@ const transactionContextReject = async () =>
 const defaultTransactionContext: TransactionContextType = {
   transactions: [],
   areTransactionsLoading: false,
+  areBudgetsLoading: false,
   addTransaction: transactionContextReject,
   deleteTransaction: transactionContextReject,
   budgets: [],

@@ -5,6 +5,7 @@ interface FriendContextType {
   friendsData: FriendsAndRequests;
   sendFriendRequest: (username: Friend['username']) => Promise<ApiResponse>;
   isSendingRequest: boolean;
+  isLoading: boolean;
   acceptFriendRequest: (id: Friend['id']) => Promise<ApiResponse>;
   cancelFriendRequest: (id: Friend['id']) => Promise<ApiResponse>;
   declineFriendRequest: (id: Friend['id']) => Promise<ApiResponse>;
@@ -22,6 +23,7 @@ const defaultFriendContext: FriendContextType = {
   },
   sendFriendRequest: categoryContextReject,
   isSendingRequest: false,
+  isLoading: false,
   acceptFriendRequest: categoryContextReject,
   deleteFriend: categoryContextReject,
   cancelFriendRequest: categoryContextReject,

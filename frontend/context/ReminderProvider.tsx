@@ -19,13 +19,15 @@ const ReminderProvider = ({ children }: ProviderProps) => {
     reminders: [],
     sharedReminders: [],
   });
-
+  // состоянния загрузки
   const [isAddingReminder, setIsAddingReminder] = useState(false);
   const [isAddingSharedReminder, setIsAddingSharedReminder] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchReminders = async () => {
       try {
+        setIsLoading(true);
         const res: AxiosResponse<RemindersResponse> =
           await api.get('/reminders');
         if (res.data.reminders) {
@@ -39,6 +41,8 @@ const ReminderProvider = ({ children }: ProviderProps) => {
         console.log(res.data);
       } catch (error) {
         return handleProviderError(error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchReminders();
@@ -163,6 +167,7 @@ const ReminderProvider = ({ children }: ProviderProps) => {
         deactivateReminder,
         isAddingReminder,
         isAddingSharedReminder,
+        isLoading,
       }}
     >
       {children}

@@ -7,7 +7,7 @@ import BackButton from '../components/common/BackButton';
 import RouteGrowContent from '../components/wrappers/RouteGrowContent';
 
 const Friends = () => {
-  const { friendsData } = useFriends();
+  const { friendsData, isLoading } = useFriends();
   const { friends, outgoingRequests, incomingRequests } = friendsData;
 
   return (
@@ -15,9 +15,11 @@ const Friends = () => {
       <RouteGrowContent>
         <RouteTitle text="Друзья" />
         <AddFriendForm />
-        {friends.length === 0 &&
-        outgoingRequests.length === 0 &&
-        incomingRequests.length === 0 ? (
+        {isLoading ? (
+          <p className="text-primary">Загрузка...</p>
+        ) : friends.length === 0 &&
+          outgoingRequests.length === 0 &&
+          incomingRequests.length === 0 ? (
           <p className="text-primary">У вас пока нет друзей или заявок.</p>
         ) : (
           <>

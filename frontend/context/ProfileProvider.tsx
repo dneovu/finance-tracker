@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 const ProfileProvider = ({ children }: ProviderProps) => {
   const { user, updateUser } = useAuth();
-
+  // состояния загрузки
   const [isChangingUsername, setIsChangingUsername] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);

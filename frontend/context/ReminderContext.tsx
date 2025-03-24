@@ -23,6 +23,7 @@ interface ReminderContextType {
   ) => Promise<ApiResponse>;
   isAddingReminder: boolean;
   isAddingSharedReminder: boolean;
+  isLoading: boolean;
 }
 
 const reminderContextReject = async () =>
@@ -38,6 +39,7 @@ const defaultCategoryContext: ReminderContextType = {
   deactivateReminder: reminderContextReject,
   isAddingReminder: false,
   isAddingSharedReminder: false,
+  isLoading: false,
 };
 
 const ReminderContext = createContext<ReminderContextType>(

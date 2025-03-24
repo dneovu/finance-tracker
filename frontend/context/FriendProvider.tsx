@@ -20,11 +20,14 @@ const FriendProvider = ({ children }: ProviderProps) => {
     outgoingRequests: [],
     incomingRequests: [],
   });
+  // состояния загрузки
   const [isSendingRequest, setIsSendingRequest] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchFriends = async () => {
       try {
+        setIsLoading(true);
         const res: AxiosResponse<FriendsResponse> = await api.get('/friends');
         if (res.data) {
           setFriendsData({
@@ -40,6 +43,8 @@ const FriendProvider = ({ children }: ProviderProps) => {
         console.log(res.data);
       } catch (error) {
         return handleProviderError(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -164,6 +169,7 @@ const FriendProvider = ({ children }: ProviderProps) => {
         friendsData,
         sendFriendRequest,
         isSendingRequest,
+        isLoading,
         acceptFriendRequest,
         deleteFriend,
         cancelFriendRequest,

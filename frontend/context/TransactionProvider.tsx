@@ -21,7 +21,9 @@ const TransactionProvider = ({ children }: ProviderProps) => {
   const { categories } = useCategories();
   const [transactions, setTransactions] = useState<Transactions>([]);
   const [budgets, setBudgets] = useState<Budgets>([]);
+  // состояния загрузки
   const [areTransactionsLoading, setAreTransactionsLoading] = useState(false);
+  const [areBudgetsLoading, setAreBudgetsLoading] = useState(false);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -41,12 +43,15 @@ const TransactionProvider = ({ children }: ProviderProps) => {
 
     const fetchBudgets = async () => {
       try {
+        setAreBudgetsLoading(true);
         const res: AxiosResponse<BudgetsResponse> = await api.get('/budgets');
         if (res.data.budgets) {
           setBudgets(res.data.budgets);
         }
       } catch (error) {
         return handleProviderError(error);
+      } finally {
+        setAreBudgetsLoading(false);
       }
     };
 
@@ -177,6 +182,7 @@ const TransactionProvider = ({ children }: ProviderProps) => {
       value={{
         transactions,
         areTransactionsLoading,
+        areBudgetsLoading,
         addTransaction,
         deleteTransaction,
         budgets,
