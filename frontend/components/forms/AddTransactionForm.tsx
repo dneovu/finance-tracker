@@ -3,12 +3,19 @@ import useCategories from '../../hooks/useCategories';
 import useTransactions from '../../hooks/useTransactions';
 import { Category } from '../../types';
 import AmountInput from '../common/AmountInput';
+import DropdownForm from './DropdownForm';
+import SelectInput from '../common/SelectInput';
 
 const AddTransactionForm = () => {
-  const { addTransaction } = useTransactions();
+  const { addTransaction, isAddingTransaction } = useTransactions();
   const { categories } = useCategories();
   const [amount, setAmount] = useState('1'); // min input
   const [categoryId, setCategoryId] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+
+  const sortedCategories = Object.values(categories).sort(
+    (a: Category, b: Category) => Number(a.type) - Number(b.type)
+  );
 
   const addTransactionHandler = async (e: FormEvent) => {
     e.preventDefault();
@@ -21,43 +28,36 @@ const AddTransactionForm = () => {
   };
 
   useEffect(() => {
-    const firstCategory = Object.values(categories)[0]; // берем первый элемент списка
-    if (firstCategory) {
-      setCategoryId(firstCategory.id);
+    if (!categoryId) {
+      const firstCategory = sortedCategories[0]; // берем первый элемент списка
+      if (firstCategory) {
+        setCategoryId(firstCategory.id);
+      }
     }
-  }, [categories]);
+  }, [sortedCategories]);
 
   return (
-    <div className="flex w-fit">
-      <form className="flex flex-col gap-2" onSubmit={addTransactionHandler}>
-        <AmountInput amount={amount} setAmount={setAmount} />
-        <div className="flex flex-col">
-          <label htmlFor="category-select">Категория</label>
-          <select
-            name="category-select"
-            id="category-select"
-            className="border-background rounded border-1 px-2 py-1 focus:outline-none"
-            onChange={(e) => setCategoryId(e.target.value)}
-          >
-            {Object.values(categories).map((category: Category) => (
-              <option
-                key={category.id}
-                value={category.id}
-                className="flex gap-3"
-              >
-                {category.name} ({category.type ? 'Доход' : 'Расход'})
-              </option>
-            ))}
-          </select>
-        </div>
-        <button
-          className="border-primary hover:border-background mt-4 cursor-pointer rounded-md border-1 bg-slate-50 px-4 py-2 transition-all"
-          type="submit"
-        >
-          Добавить
-        </button>
-      </form>
-    </div>
+    <DropdownForm
+      isOpen={isOpen}
+      setIsOpen={setIsOpen}
+      handleSubmitForm={addTransactionHandler}
+      isButtonLoading={isAddingTransaction}
+      title="Добавить транзакцию"
+      buttonText="Добавить"
+    >
+      <AmountInput amount={amount} setAmount={setAmount} />
+      <SelectInput
+        id="category-select"
+        onChange={(e) => setCategoryId(e.target.value)}
+        labelText="Категория"
+      >
+        {sortedCategories.map((category: Category) => (
+          <option key={category.id} value={category.id} className="flex gap-3">
+            {category.name} ({category.type ? 'Доход' : 'Расход'})
+          </option>
+        ))}
+      </SelectInput>
+    </DropdownForm>
   );
 };
 

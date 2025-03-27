@@ -12,6 +12,8 @@ interface TransactionContextType {
   transactions: Transactions;
   areTransactionsLoading: boolean;
   areBudgetsLoading: boolean;
+  isAddingTransaction: boolean;
+  isAddingBudget: boolean;
   addTransaction: (
     amount: number,
     date: Date,
@@ -39,6 +41,8 @@ const defaultTransactionContext: TransactionContextType = {
   transactions: [],
   areTransactionsLoading: false,
   areBudgetsLoading: false,
+  isAddingTransaction: false,
+  isAddingBudget: false,
   addTransaction: transactionContextReject,
   deleteTransaction: transactionContextReject,
   budgets: [],

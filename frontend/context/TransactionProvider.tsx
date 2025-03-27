@@ -24,6 +24,8 @@ const TransactionProvider = ({ children }: ProviderProps) => {
   // состояния загрузки
   const [areTransactionsLoading, setAreTransactionsLoading] = useState(false);
   const [areBudgetsLoading, setAreBudgetsLoading] = useState(false);
+  const [isAddingTransaction, setIsAddingTransaction] = useState(false);
+  const [isAddingBudget, setIsAddingBudget] = useState(false);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -65,6 +67,7 @@ const TransactionProvider = ({ children }: ProviderProps) => {
     category_id: number
   ) => {
     try {
+      setIsAddingTransaction(true);
       const res: AxiosResponse<TransactionsResponse> = await api.post(
         '/add-transaction',
         {
@@ -84,6 +87,8 @@ const TransactionProvider = ({ children }: ProviderProps) => {
       return res.data;
     } catch (error) {
       return handleProviderError(error);
+    } finally {
+      setIsAddingTransaction(false);
     }
   };
 
@@ -117,6 +122,7 @@ const TransactionProvider = ({ children }: ProviderProps) => {
     category_id: number | null
   ) => {
     try {
+      setIsAddingBudget(true);
       const res: AxiosResponse<{ status: string; budget: Budget }> =
         await api.post('/add-budget', {
           amount,
@@ -133,6 +139,8 @@ const TransactionProvider = ({ children }: ProviderProps) => {
       return res.data;
     } catch (error) {
       return handleProviderError(error);
+    } finally {
+      setIsAddingBudget(false);
     }
   };
 
@@ -189,6 +197,8 @@ const TransactionProvider = ({ children }: ProviderProps) => {
         addBudget,
         checkBudgetExceeded,
         deleteBudget,
+        isAddingTransaction,
+        isAddingBudget,
       }}
     >
       {children}

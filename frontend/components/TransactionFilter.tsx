@@ -1,14 +1,23 @@
 import { useState } from 'react';
-import { toZonedTime, format } from 'date-fns-tz';
+import { toZonedTime } from 'date-fns-tz';
 import useTransactions from '../hooks/useTransactions';
 import DateTimeInput from './common/DateTimeInput';
+import DropdownForm from './forms/DropdownForm';
+import TransactionItem from './listItems/TransactionItem';
 
 const TransactionFilter = () => {
-  const { transactions, deleteTransaction } = useTransactions();
+  const { transactions, deleteTransaction, areTransactionsLoading } =
+    useTransactions();
   const [fromDateTime, setFromDateTime] = useState('');
   const [toDateTime, setToDateTime] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
 
-  const resetHandler = () => {
+  if (areTransactionsLoading) {
+    return <p className="text-primary mb-4">Загрузка...</p>;
+  }
+
+  const resetHandler = (e: React.FormEvent) => {
+    e.preventDefault();
     setFromDateTime('');
     setToDateTime('');
   };
@@ -17,37 +26,40 @@ const TransactionFilter = () => {
   const transactionsArray = Object.values(transactions);
 
   const filteredTransactions = transactionsArray.filter((transaction) => {
-    // преобразуем время транзакции в локальное время пользователя
+    // Преобразуем дату транзакции в локальное время
     const transactionDate = toZonedTime(
       new Date(transaction.date + 'Z'),
       userTimeZone
     );
 
-    // преобразуем время фильтра по вводу пользователя в локальное время
+    // Преобразуем время фильтра в локальное время
     const fromDateTimeZoned = fromDateTime
-      ? new Date(
-          toZonedTime(new Date(fromDateTime), userTimeZone) // локальное время
-        )
+      ? new Date(toZonedTime(new Date(fromDateTime), userTimeZone))
       : null;
 
     const toDateTimeZoned = toDateTime
-      ? new Date(
-          toZonedTime(new Date(toDateTime), userTimeZone) // локальное время
-        )
+      ? new Date(toZonedTime(new Date(toDateTime), userTimeZone))
       : null;
 
-    // сравниваем с локальным временем
     return (
       (!fromDateTimeZoned || transactionDate >= fromDateTimeZoned) &&
       (!toDateTimeZoned || transactionDate <= toDateTimeZoned)
     );
   });
 
-  return (
-    <div className="rounded-lg border p-4">
-      <h2 className="mb-2 text-lg font-bold">Фильтр транзакций</h2>
+  if (filteredTransactions.length === 0) {
+    return <p className="text-primary mb-4">У вас пока нет транзакций.</p>;
+  }
 
-      <div className="mb-4 flex flex-wrap gap-4">
+  return (
+    <>
+      <DropdownForm
+        title="Фильтр транзакций"
+        buttonText="Сбросить"
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        handleSubmitForm={resetHandler}
+      >
         <DateTimeInput
           id="from-date-time"
           value={fromDateTime}
@@ -61,43 +73,22 @@ const TransactionFilter = () => {
           setValue={setToDateTime}
           labelText="До:"
         />
-      </div>
-      <button
-        onClick={resetHandler}
-        className="w-fit cursor-pointer rounded border p-1"
-      >
-        Сбросить
-      </button>
+      </DropdownForm>
 
-      <h3 className="text-md mb-2 font-semibold">
-        Отфильтрованные транзакции:
-      </h3>
-      <ul className="rounded border p-2">
-        {filteredTransactions.length > 0 ? (
-          filteredTransactions.map((t) => (
-            <li
+      <div className="text-primary mt-4 mb-6 flex flex-col gap-3">
+        <h2 className="text-xl font-semibold">Ваши транзакции</h2>
+        <ul className="text-background space-y-2">
+          {filteredTransactions.map((t) => (
+            <TransactionItem
               key={t.id}
-              className="flex justify-between border-b p-1 last:border-0"
-            >
-              {format(
-                toZonedTime(new Date(t.date + 'Z'), userTimeZone),
-                'dd-MM-yy HH:mm'
-              )}{' '}
-              | {t.amount} ₽ {t.category.name} (
-              {t.category.type ? 'Доход' : 'Расход'})
-              <button
-                onClick={() => deleteTransaction(t.id)}
-                className="cursor-pointer"
-              >
-                ❌
-              </button>
-            </li>
-          ))
-        ) : (
-          <p className="text-gray-500">Нет транзакций в этом диапазоне</p>
-        )}
-      </ul>
-    </div>
+              transaction={t}
+              deleteTransaction={deleteTransaction}
+              userTimeZone={userTimeZone}
+            />
+          ))}
+        </ul>
+      </div>
+    </>
   );
 };
 
