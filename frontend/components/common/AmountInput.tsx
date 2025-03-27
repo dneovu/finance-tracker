@@ -20,7 +20,7 @@ const AmountInput = ({ amount, setAmount }: AmountInputProps) => {
 
   return (
     <div className="flex flex-col">
-      <label htmlFor="amount">Сумма:</label>
+      <label htmlFor="amount">Сумма</label>
       <div className="relative w-full">
         <input
           className="border-primary w-full appearance-none rounded-sm border-2 px-2 py-1 pr-6 focus:outline-none"

@@ -3,7 +3,7 @@ import ChangePasswordForm from '../components/forms/ChangePasswordForm';
 import ManageAvatar from '../components/ManageAvatar';
 import RouteWrapper from '../components/wrappers/RouteWrapper';
 import useAuth from '../hooks/useAuth';
-import RouteTitle from '../components/RouteTitle';
+import RouteTitle from '../components/common/RouteTitle';
 import BackButton from '../components/common/BackButton';
 import RouteGrowContent from '../components/wrappers/RouteGrowContent';
 
@@ -15,7 +15,7 @@ const Profile = () => {
       <RouteGrowContent className="gap-6">
         <RouteTitle text={user?.username ?? '...'} />
         <ManageAvatar />
-        <div className="flex flex-wrap">
+        <div className="flex flex-wrap flex-col">
           <ChangeUsernameForm />
           <ChangePasswordForm />
         </div>

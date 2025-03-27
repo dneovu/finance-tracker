@@ -2,7 +2,7 @@ import useCategories from '../hooks/useCategories';
 import { Category } from '../types';
 import AddCategoryForm from '../components/forms/AddCategoryForm';
 import RouteWrapper from '../components/wrappers/RouteWrapper';
-import RouteTitle from '../components/RouteTitle';
+import RouteTitle from '../components/common/RouteTitle';
 import CategoryItem from '../components/listItems/CategoryItem';
 import RouteGrowContent from '../components/wrappers/RouteGrowContent';
 import BackButton from '../components/common/BackButton';

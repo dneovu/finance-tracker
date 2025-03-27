@@ -8,7 +8,7 @@ interface HomeLinkProps {
 const HomeLink = ({ route, text }: HomeLinkProps) => {
   return (
     <NavLink
-      className="text-primary hover:text-secondary w-fit text-5xl hover:italic"
+      className="text-primary hover:text-secondary w-fit text-5xl select-none hover:italic"
       to={route}
       end
     >

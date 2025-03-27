@@ -8,7 +8,7 @@ interface DropdownFormProps {
   isButtonLoading?: boolean;
   setIsOpen: (isOpen: boolean) => void;
   isOpen: boolean;
-  handleSubmitForm: (e: FormEvent) => Promise<void>;
+  handleSubmitForm: (e: FormEvent) => void;
 }
 
 const DropdownForm = ({
@@ -21,7 +21,7 @@ const DropdownForm = ({
   isButtonLoading,
 }: DropdownFormProps) => {
   return (
-    <div className="text-primary w-full">
+    <div className="text-primary w-fit">
       <div
         className="flex cursor-pointer items-center"
         onClick={() => setIsOpen(!isOpen)}

@@ -22,13 +22,6 @@ const Home = () => {
               <HomeLink route="/categories" text="Категории" />
               <HomeLink route="/transactions" text="Транзакции" />
               <HomeLink route="/reminders" text="Напоминания" />
-
-              {/* <button
-                className="w-fit cursor-pointer underline"
-                onClick={logout}
-              >
-                Выйти
-              </button> */}
             </>
           ) : (
             <div className="flex flex-col gap-5">

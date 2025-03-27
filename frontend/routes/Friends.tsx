@@ -2,7 +2,7 @@ import AddFriendForm from '../components/forms/AddFriendForm';
 import useFriends from '../hooks/useFriends';
 import FriendsSection from '../components/FriendsSection';
 import RouteWrapper from '../components/wrappers/RouteWrapper';
-import RouteTitle from '../components/RouteTitle';
+import RouteTitle from '../components/common/RouteTitle';
 import BackButton from '../components/common/BackButton';
 import RouteGrowContent from '../components/wrappers/RouteGrowContent';
 

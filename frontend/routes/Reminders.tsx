@@ -4,7 +4,7 @@ import useReminders from '../hooks/useReminders';
 import { Reminder } from '../types/reminder';
 import AddSharedReminderForm from '../components/forms/AddSharedReminderForm';
 import RouteWrapper from '../components/wrappers/RouteWrapper';
-import RouteTitle from '../components/RouteTitle';
+import RouteTitle from '../components/common/RouteTitle';
 import ReminderItem from '../components/listItems/ReminderItem';
 import RouteGrowContent from '../components/wrappers/RouteGrowContent';
 import BackButton from '../components/common/BackButton';
@@ -43,7 +43,7 @@ const Reminders = () => {
                 .map((reminder: Reminder) => {
                   const localDate = format(
                     new Date(reminder.dueDate + 'Z'),
-                    'dd-MM-yy HH:mm'
+                    'dd.MM.yy HH:mm'
                   );
 
                   return (
@@ -74,7 +74,7 @@ const Reminders = () => {
                 .map((reminder: Reminder) => {
                   const localDate = format(
                     new Date(reminder.dueDate),
-                    'dd-MM-yy HH:mm'
+                    'dd.MM.yy HH:mm'
                   );
 
                   return (

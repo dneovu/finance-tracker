@@ -2,16 +2,17 @@ import { FormEvent, useState } from 'react';
 import useCategories from '../../hooks/useCategories';
 import DropdownForm from './DropdownForm';
 import InputWithValidation from '../common/InputWithValidation';
+import SelectInput from '../common/SelectInput';
 
 const AddCategoryForm = () => {
   const { addCategory, isAddingCategory } = useCategories();
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [selectedType, setSelectedType] = useState(false);
+  const [selectedType, setSelectedType] = useState(0);
   const [isOpen, setIsOpen] = useState(true);
 
   const addCategoryHandler = async (e: FormEvent) => {
     e.preventDefault();
-    await addCategory(newCategoryName, selectedType);
+    await addCategory(newCategoryName, Boolean(selectedType));
     setNewCategoryName('');
   };
 
@@ -34,18 +35,15 @@ const AddCategoryForm = () => {
           minLength={1}
           isValid={() => newCategoryName.length > 0}
         />
-        <div className="flex flex-col">
-          <label htmlFor="type-select">Тип</label>
-          <select
-            name="type-select"
-            id="type-select"
-            className="border-primary bg-background rounded-sm border-2 px-2 py-[0.4rem] focus:outline-none"
-            onChange={(e) => setSelectedType(Boolean(Number(e.target.value)))}
-          >
-            <option value="0">Расход</option>
-            <option value="1">Доход</option>
-          </select>
-        </div>
+        <SelectInput
+          id="type-select"
+          labelText="Тип"
+          onChange={(e) => setSelectedType(Number(e.target.value))}
+          value={selectedType}
+        >
+          <option value={0}>Расход</option>
+          <option value={1}>Доход</option>
+        </SelectInput>
       </div>
     </DropdownForm>
   );
