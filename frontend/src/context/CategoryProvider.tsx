@@ -35,7 +35,7 @@ const CateroryProvider = ({ children }: ProviderProps) => {
       }
     };
 
-    fetchCategories();
+    if (isUserAuthenticated) fetchCategories();
   }, [isUserAuthenticated]);
 
   const addCategory = async (name: string, type: boolean) => {

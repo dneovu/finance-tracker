@@ -48,7 +48,7 @@ const FriendProvider = ({ children }: ProviderProps) => {
       }
     };
 
-    fetchFriends();
+    if (isUserAuthenticated) fetchFriends();
   }, [isUserAuthenticated]);
 
   const sendFriendRequest = async (username: Friend['username']) => {

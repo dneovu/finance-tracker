@@ -45,7 +45,7 @@ const ReminderProvider = ({ children }: ProviderProps) => {
         setIsLoading(false);
       }
     };
-    fetchReminders();
+    if (isUserAuthenticated) fetchReminders();
   }, [isUserAuthenticated]);
 
   const addReminder = async (

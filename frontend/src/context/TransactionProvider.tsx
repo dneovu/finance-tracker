@@ -56,9 +56,10 @@ const TransactionProvider = ({ children }: ProviderProps) => {
         setAreBudgetsLoading(false);
       }
     };
-
-    fetchTransactions();
-    fetchBudgets();
+    if (isUserAuthenticated) {
+      fetchTransactions();
+      fetchBudgets();
+    }
   }, [isUserAuthenticated]);
 
   const addTransaction = async (
