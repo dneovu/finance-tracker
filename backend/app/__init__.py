@@ -7,19 +7,10 @@ from app.config import Config
 frontend_url = os.environ.get("FRONTEND_URL")
 
 app = Flask(__name__)
+app.config.from_object(Config)
+
 CORS(app, supports_credentials=True, origins=frontend_url)
 
-
-@app.after_request
-def after_request(response):
-    response.headers["Access-Control-Allow-Origin"] = frontend_url
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
-    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS, DELETE, PUT"
-    return response
-
-
-app.config.from_object(Config)
 Config.init_cloudinary()
 
 login_manager = LoginManager(app)
