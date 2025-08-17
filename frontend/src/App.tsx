@@ -1,14 +1,14 @@
-import useAuth from '../hooks/useAuth';
+import useAuth from './hooks/useAuth';
 import { Routes, Route, Navigate, Outlet } from 'react-router';
-import Login from '../routes/Login';
-import Register from '../routes/Register';
-import Home from '../routes/Home';
-import Profile from '../routes/Profile';
-import Categories from '../routes/Categories';
-import Transactions from '../routes/Transactions';
-import Friends from '../routes/Friends';
-import Reminders from '../routes/Reminders';
-import LoadingView from '../components/common/LoadingView';
+import Login from './routes/Login';
+import Register from './routes/Register';
+import Home from './routes/Home';
+import Profile from './routes/Profile';
+import Categories from './routes/Categories';
+import Transactions from './routes/Transactions';
+import Friends from './routes/Friends';
+import Reminders from './routes/Reminders';
+import LoadingView from './components/common/LoadingView';
 
 interface RouteProps {
   redirectPath?: string;
