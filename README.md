@@ -23,6 +23,10 @@
 - Flask  
 - PostgreSQL
 
+### Code quality
+- ESLint
+- Prettier
+
 ### Инфраструктура
 - Vercel (деплой фронтенда) 
 - Render (деплой бэкенда)  
